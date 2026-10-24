@@ -151,6 +151,11 @@ if(!cloudIdentity())cMessage('ℹ️ Відкрий СІЧ через кнопк
 cButtons();
 // Verify remote revision automatically on each Telegram launch; never overwrite without a trusted baseline.
 if(cloudIdentity())cConnect();
+      
+document.getElementById('sichPlay').addEventListener('click', () => {
+  if (cloudRevision === null && !cloudBusy && cloudIdentity()) cConnect();
+});
+  
 const level=()=>1+Math.floor(state.xp/160);const cost=d=>Math.round(d.base*Math.pow(1.7,state.buildings[d.id]||0));const today=()=>new Date().toLocaleDateString('en-CA');const questDefs=[{id:'upgrade',name:'Покращити будь-яку будівлю',goal:1,bonus:100},{id:'earn',name:'Зібрати монети з господарства',goal:1,bonus:80},{id:'explore',name:'Оглянути всі будівлі',goal:4,bonus:70}];state.daily=state.daily||{};if(state.daily.date!==today())state.daily={date:today(),upgrade:0,earn:0,explore:0,viewed:[],claimed:[]};
 function show(msg){$('toast').textContent=msg;$('toast').classList.remove('hide');clearTimeout(toastTimer);toastTimer=setTimeout(()=>$('toast').classList.add('hide'),2300)}function update(){ $('coins').textContent=state.coins.toLocaleString('uk-UA');$('xp').textContent=state.xp;$('wood').textContent=state.wood;$('food').textContent=state.food;$('prestige').textContent=state.buildings.tower*10+state.buildings.hut*5;$('sichlevel').textContent=level();$('identity').textContent=state.name+' · Рівень '+level();render();draw();safe();if(autoArmed)scheduleAutoSync() }
 function actionUpgrade(id){const d=defs.find(x=>x.id===id),price=cost(d),woodCost=id==='hut'?0:10+10*(state.buildings[id]||0),foodCost=id==='tower'?10:0;if(state.coins<price||state.wood<woodCost||state.food<foodCost)return show('Недостатньо ресурсів: треба '+price+' 🪙 '+woodCost+' 🪵 '+foodCost+' 🌾');state.coins-=price;state.wood-=woodCost;state.food-=foodCost;state.buildings[id]=(state.buildings[id]||0)+1;state.xp+=45;state.daily.upgrade++;show('🏗️ '+d.title+' покращено! +45 досвіду');update()}
