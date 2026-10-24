@@ -1,0 +1,624 @@
+<!doctype html><html lang="uk"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#142d28"><title>СІЧ v1.7 · Оновлений інтерфейс</title><style>
+:root{font-family:system-ui,-apple-system,Segoe UI,sans-serif;color:#fff4d9;background:#0e201d}*{box-sizing:border-box}body{margin:0;min-height:100dvh;background:radial-gradient(circle at 50% 10%,#365a43,#112720 72%)}button{font:inherit;cursor:pointer}button:disabled{opacity:.48;cursor:default}.app{max-width:510px;margin:auto;min-height:100dvh;display:flex;flex-direction:column;background:#16352a;box-shadow:0 0 40px #0006}.header{display:flex;align-items:center;justify-content:space-between;padding:16px 18px 7px}.logo{font-weight:1000;font-size:23px;letter-spacing:1px;color:#ffe0a0;text-shadow:0 3px #5e331b}.eyebrow{font-size:10px;letter-spacing:2px;color:#bed0b3}.stats{display:flex;gap:5px;align-items:center;flex-wrap:wrap;justify-content:flex-end}.pill{font-size:11px!important;padding:6px 7px!important}.header{gap:10px}.logo{font-size:21px!important}.resources{display:flex;gap:7px;padding:0 16px 10px}.resource{flex:1;background:#234536;border:1px solid #6d8252;border-radius:11px;padding:8px 6px;text-align:center;font-size:12px;font-weight:800}.resource b{color:#ffdf9d}.resourcebar{display:flex;gap:7px;margin:0 0 12px}.resourcebar .btn{flex:1;font-size:11px;padding:10px 6px}.btn:focus-visible,.tab:focus-visible{outline:3px solid #ffdf9d;outline-offset:2px}.pill{padding:7px 9px;border:1px solid #9b8257;background:#294034;border-radius:40px;font-size:13px;font-weight:800;white-space:nowrap}.sub{padding:0 18px 12px;display:flex;justify-content:space-between;align-items:center;color:#c8d8bf;font-size:12px}.mapframe{position:relative;margin:0 10px;border:5px solid #59452e;border-radius:24px;overflow:hidden;box-shadow:0 12px 0 #0b1c1b,0 18px 35px #0008;background:#91b16e;aspect-ratio:1/1.01;max-height:500px}.mapframe canvas{display:block;width:100%;height:100%;touch-action:manipulation}.maptag{position:absolute;left:12px;top:12px;padding:7px 11px;border-radius:9px;background:#1b372bcf;border:1px solid #d5b877aa;font-size:12px;font-weight:800}.tip{position:absolute;bottom:10px;left:12px;right:12px;text-align:center;background:#142c27d9;border:1px solid #9a835c88;border-radius:12px;padding:8px;font-size:12px;color:#fff0c9}.panel{padding:16px 16px 20px;flex:1}.tabline{display:flex;gap:5px;margin-bottom:12px}.tab{flex:1;min-width:0;border:1px solid #6b6a48;background:#294537;padding:10px 4px;color:#dfd6bb;border-radius:13px;font-size:10px;font-weight:800}.tab.active{background:#e9b55f;color:#352817;border-color:#ffdd90}.card{background:#244337;border:1px solid #5f7251;border-radius:16px;padding:13px;margin-bottom:10px}.row{display:flex;align-items:center;justify-content:space-between;gap:12px}.name{font-weight:900;font-size:16px}.small{color:#bdd1bd;font-size:12px;line-height:1.5;margin-top:4px}.btn{background:linear-gradient(#ffd27a,#e8a443);border:2px solid #b57828;color:#412d14;font-size:13px;font-weight:900;border-radius:12px;padding:11px 12px;box-shadow:0 3px 0 #71431d}.btn:active:not(:disabled){transform:translateY(2px);box-shadow:0 1px 0 #71431d}.btn.secondary{background:#375446;color:#f6e7bf;border-color:#77805b;box-shadow:0 3px 0 #1a2c25}.progress{height:8px;border-radius:10px;background:#142d29;overflow:hidden;margin-top:10px}.progress>div{height:100%;background:#eec375;border-radius:10px}.toast{position:fixed;top:20px;left:50%;transform:translateX(-50%);z-index:9;background:#fff1c7;color:#3d2c15;border-radius:12px;padding:12px 16px;box-shadow:0 6px 30px #0009;font-weight:800;font-size:13px;max-width:90%;text-align:center}.foot{font-size:11px;color:#9bb4a5;text-align:center;padding:7px 16px 18px}.hide{display:none}.badge{font-size:10px;border:1px solid #ad9e72;padding:4px 8px;border-radius:20px;color:#ffe2a4}.village{font-size:12px;font-weight:700;color:#e9dfc6}
+
+.arenaOverlay{position:fixed;inset:0;background:#071610eF;z-index:100;display:none;align-items:center;justify-content:center;padding:12px;overflow:auto}.arenaOverlay.show{display:flex}.arenaBox{width:min(100%,520px);border:2px solid #bc985a;border-radius:20px;background:linear-gradient(150deg,#365b41,#132820);padding:16px;box-shadow:0 20px 80px #000a}.arenaTitle{text-align:center;color:#ffdd96;font-size:25px;font-weight:1000;letter-spacing:1px}.arenaDesc{text-align:center;font-size:12px;color:#d8dfcb;margin:5px 0 14px}.combatants{display:grid;grid-template-columns:1fr 1fr;gap:13px}.fighter{border:1px solid #806e4e;border-radius:14px;background:#1c362c;padding:10px;text-align:center;transition:transform .13s}.fighter.hit{transform:translateX(9px);filter:brightness(1.7)}.fighter.enemy.hit{transform:translateX(-9px)}.fighter .avatar{font-size:74px;line-height:1.4;min-height:110px;display:grid;place-items:center}.fighter .avatar.swing{animation:swing .45s ease}.fighter .avatar span{display:block}.fighter b{display:block;font-size:14px}.hpbar{height:13px;background:#4b2926;border-radius:8px;overflow:hidden;margin:10px 0 5px;border:1px solid #b7a68a}.hpfill{height:100%;width:100%;background:linear-gradient(90deg,#65bd63,#d0ec69);transition:width .35s}.enemy .hpfill{background:linear-gradient(90deg,#be3d34,#ee9764)}.hptext{font-weight:800;font-size:12px}.fightlog{border:1px solid #78906b;background:#0d251e;border-radius:10px;min-height:67px;padding:11px;font-size:13px;line-height:1.5;margin-top:14px;color:#f2e8c8}.arenaActions{display:flex;gap:9px;margin-top:12px}.arenaActions button{flex:1}.arenaOverlay .btn{background:#eac175;color:#1e2a1f;border:0;padding:12px;border-radius:10px;font-weight:900}.arenaOverlay .btn.secondary{background:#385348;color:#ffedc5;border:1px solid #71836d}.arenaOverlay .btn:disabled{opacity:.5}.arenaResult{font-size:20px;font-weight:900;color:#ffe097;text-align:center;padding:4px 0}@keyframes swing{0%{transform:translateX(0) rotate(0)}35%{transform:translateX(12px) rotate(-10deg)}75%{transform:translateX(0) rotate(8deg)}100%{transform:none}}@media(max-width:390px){.fighter .avatar{font-size:53px;min-height:85px}.arenaBox{padding:10px}}
+
+.tabline{overflow-x:auto;scrollbar-width:thin;padding-bottom:5px}.tab{flex:0 0 auto;min-width:80px;padding:10px 7px}.squad{display:flex;flex-wrap:wrap;justify-content:center;gap:1px;min-height:22px;margin:5px 0}.squad span{font-size:18px;animation:idle 1.1s ease-in-out infinite alternate}.squad span:nth-child(2n){animation-delay:.35s}.areaBadge{font-weight:900;color:#ffdfa3}.achievement{display:flex;gap:12px;align-items:center}.achievement .medal{font-size:33px;filter:grayscale(1);opacity:.4}.achievement.unlocked .medal{filter:none;opacity:1}@keyframes idle{to{transform:translateY(-3px)}}
+.adventureTrail{display:grid;gap:12px;margin-top:12px}.adventureNode{padding:16px;background:linear-gradient(120deg,#254538,#18362e);border:1px solid #547154;border-radius:16px}.adventureNode.done{border-color:#cead5a}.adventureNode.locked{opacity:.65}.adventureNode .btn{margin-top:12px}.adventureNode .small{margin:8px 0}.adventureNode .row{gap:8px;flex-wrap:wrap}</style><script src="https://telegram.org/js/telegram-web-app.js?64"></script>
+<style>.tgstatus{font:600 11px system-ui;color:#d9ecdc;background:#244637;padding:7px 15px;border-bottom:1px solid #597258}.tgstatus b{color:#ffe3a3}.foot{padding-bottom:calc(16px + env(safe-area-inset-bottom))}</style><style>
+/* Official SICH brand: start view overlays existing game without replacing mechanics */
+:root{--sich-gold:#f1cd82;--sich-forest:#10271d}
+.logo{color:var(--sich-gold)!important;font-size:26px!important;letter-spacing:3px}
+.launch{position:fixed;inset:0;z-index:300;display:flex;justify-content:center;align-items:center;background:#081910;overflow:auto;padding:max(16px,env(safe-area-inset-top)) 12px max(16px,env(safe-area-inset-bottom));transition:opacity .28s ease,visibility .28s ease}
+.launch.closed{opacity:0;visibility:hidden;pointer-events:none}
+.launch-inner{position:relative;width:min(100%,520px);min-height:min(820px,94dvh);display:flex;flex-direction:column;justify-content:flex-end;align-items:center;overflow:hidden;border-radius:24px;border:2px solid #a48148;background:#1a3025;box-shadow:0 15px 65px #000c}
+.launch-bg{position:absolute;inset:0;background:linear-gradient(180deg,#06160db0 0%,#0b231524 30%,#08150bd0 72%,#07150af9 100%),url('assets/sich-landscape.webp') center/cover}
+.launch-inner:before{position:absolute;content:'';z-index:1;inset:8px;border:1px solid #b895554a;border-radius:17px;pointer-events:none}
+.launch-main{z-index:2;position:relative;display:flex;flex-direction:column;align-items:center;width:100%;padding:38px 24px 34px;text-align:center;gap:11px}
+.launch-logo{width:min(64%,250px);height:auto;aspect-ratio:1/1;object-fit:contain;border-radius:50%;box-shadow:0 9px 35px #0009}
+.launch-title{font-family:Georgia,serif;letter-spacing:8px;font-size:clamp(34px,9vw,60px);font-weight:900;color:#f7d187;text-shadow:0 3px 2px #4c2b13,0 6px 22px #000}
+.launch-motto{font-weight:900;font-size:clamp(11px,3vw,14px);letter-spacing:.5px;line-height:1.6;color:#ffe6ac;text-shadow:0 2px 8px #000}
+.launch-btn{min-height:64px;width:min(100%,330px);border:2px solid #dfb969;border-radius:14px;color:#ffe4a4;background:linear-gradient(180deg,#426e42,#153b29);box-shadow:0 5px 0 #07170b,0 0 24px #0007;font-size:26px;font-weight:1000;letter-spacing:3px;margin:10px 0 0}
+.launch-btn:focus-visible{outline:3px solid #fff;outline-offset:4px}
+.launch-note{font-size:11px;line-height:1.5;color:#e4d1ac}
+.launch-version{position:absolute;z-index:3;top:20px;left:22px;font-size:11px;color:#f5d7a3;font-weight:800;letter-spacing:1px}
+.launch-return{position:fixed;right:max(14px,env(safe-area-inset-right));bottom:max(20px,env(safe-area-inset-bottom));z-index:50;border-radius:100px;background:#193d31;color:#f5dc99;border:1px solid #b49558;padding:9px 13px;font-weight:800;box-shadow:0 5px 20px #0007}
+@media(max-height:700px){.launch-inner{min-height:95dvh}.launch-logo{width:min(39%,150px)}.launch-main{padding:20px 20px 18px;gap:5px}.launch-btn{min-height:52px}}
+</style><style>
+.cloudtest{margin:18px 0;padding:16px;border-radius:15px;border:1px solid #c6a45f;background:linear-gradient(145deg,#234536,#112b24);color:#f9e4b7}
+.cloudtest h2{margin:0 0 6px;font-size:18px}.cloudtest p{font-size:12px;line-height:1.5;margin:5px 0;color:#e1d8ba}
+.cloudbuttons{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}.cloudbuttons button{border:1px solid #d8b873;border-radius:9px;background:#2c4d32;color:#ffe3a4;font-weight:800;padding:11px 12px;cursor:pointer;flex:1 1 130px}.cloudbuttons button:disabled{opacity:.45;cursor:not-allowed}
+#cloudStatus{border-left:3px solid #d5b46d;padding:7px 9px;background:#0a1d17a8;overflow-wrap:anywhere}
+</style>
+<style id="sich-v17-style">
+/* v1.7 UX polish — original mechanics and Supabase endpoints untouched */
+:root{--gold:#e7be72;--green:#18392d;--line:rgba(227,190,112,.38)}
+html{scroll-behavior:smooth}
+body{background:radial-gradient(ellipse at 50% 0%,#2a4b39 0%,#10261f 65%,#0a1b17 100%)}
+button,select{transition:background-color .15s ease,border-color .15s ease,transform .15s ease,box-shadow .15s ease}
+button:focus-visible,select:focus-visible{outline:3px solid #fff0a5!important;outline-offset:2px}
+button:active{transform:translateY(1px)}
+#otamanPanel{box-shadow:0 12px 32px rgba(2,13,9,.25);overflow:hidden}
+#otamanPanel .otcard{min-width:0;overflow-wrap:anywhere}
+#otamanPanel select{min-height:52px;font-size:17px}
+#otamanPanel #otamanSaveCity{min-height:48px;max-width:100%;white-space:normal;text-align:center}
+#cityRankBox{border-radius:16px}
+#cityRankResults .rankitem{display:flex;gap:10px;align-items:center;justify-content:space-between;padding:11px 8px;border-bottom:1px solid rgba(245,222,168,.15);font-size:15px;line-height:1.5}
+#cityRankResults .rankitem:last-child{border-bottom:0}
+#cityRankResults .rankitem span{min-width:0;overflow-wrap:anywhere}
+#cityRankResults .rankitem strong{white-space:nowrap;color:#f7dfaa}
+#cityRankRefresh{min-height:46px}
+@media(max-width:540px){
+ .app{max-width:100%;overflow-x:clip}
+ .header{gap:8px}
+ .stats{flex-wrap:wrap;justify-content:flex-end}
+ #otamanPanel{padding:14px!important;margin:14px 0!important}
+ #otamanPanel .otgrid{grid-template-columns:1fr!important}
+ .tabline{-webkit-overflow-scrolling:touch;overscroll-behavior-x:contain}
+ .tab{min-height:44px}
+ #cityRankResults .rankitem{font-size:14px}
+}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}button,select{transition:none!important}}
+</style>
+<style>
+.health-panel{border:1px solid #907b45;background:linear-gradient(155deg,#203f32,#142f27);border-radius:16px;padding:14px 15px;margin:10px 0 14px;color:#f9df9e}
+.hp-row,.hp-actions{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}.hp-row strong{font-size:14px}
+.hp-track{height:13px;border-radius:20px;background:#5e3436;overflow:hidden;margin:11px 0}.hp-fill{height:100%;background:linear-gradient(90deg,#e5a260,#7ccf73);width:100%;transition:width .25s}
+.hp-actions{font-size:12px;color:#e6d7b5}.hp-actions button{border:1px solid #b59a56;border-radius:10px;background:#caa35d;color:#162b25;font-weight:800;padding:10px 12px;cursor:pointer}.hp-actions button:disabled{opacity:.5;cursor:not-allowed}
+</style><style id="v22-art-css">.fighter .avatar{height:155px;min-height:0;overflow:hidden;border-radius:12px;background:#193b2e;line-height:normal;position:relative}.fighter .avatar img{display:block;width:100%;height:100%;object-fit:cover;object-position:center 22%;border-radius:12px;filter:saturate(1.08) contrast(1.03)}.fighter.enemy .avatar img{object-position:center 8%}.fighter .avatar::after{content:"";position:absolute;inset:auto 0 0;height:25%;background:linear-gradient(transparent,#1c362c)}.v22-profile{display:block;height:150px;max-width:100%;width:160px;object-fit:cover;object-position:center 16%;border-radius:13px;border:1px solid #bd965b;margin:12px 0;background:#284631}.fighter.hit img{filter:brightness(1.6) saturate(1.2)}@media(max-width:420px){.fighter .avatar{height:125px}.fighter{padding:7px}.combatants{gap:8px}}</style></head><body><div class="launch" id="sichLaunch" role="dialog" aria-modal="true" aria-label="Стартовий екран гри СІЧ"><div class="launch-inner"><div class="launch-bg"></div><div class="launch-version">СІЧ v2.6 · ЖИВА АНІМАЦІЯ</div><div class="launch-main"><img class="launch-logo" src="assets/sich-emblem.webp" alt="Емблема СІЧ із козацькою фортецею"/><div class="launch-title">СІЧ</div><div class="launch-motto">ТВОЯ ЗЕМЛЯ. ТВОЄ ВІЙСЬКО.<br>ТВОЯ СЛАВА.</div><button id="sichPlay" class="launch-btn" type="button">⚔ ГРАТИ</button><div class="launch-note">Будуй Січ · Збирай військо · Вирушай у походи</div></div></div></div><main class="app"><div class="tgstatus" id="tgStatus" role="status">🌐 Браузерний режим · прогрес на цьому пристрої</div><div class="header"><div><div class="eyebrow">ТВОЯ ПРИГОДА ПОЧИНАЄТЬСЯ</div><div class="logo">⚔ СІЧ</div></div><div class="stats"><div class="pill">🪙 <span id="coins">500</span></div><div class="pill">⭐ <span id="xp">0</span></div></div></div><div class="sub"><span id="identity">Отаман · Рівень 1</span><span class="village">🌾 Моя Січ</span></div><div class="resources"><div class="resource">🪵 Дерево <b id="wood">0</b></div><div class="resource">🌾 Їжа <b id="food">0</b></div><div class="resource">🏅 Престиж <b id="prestige">0</b></div></div><section id="healthPanel" class="health-panel" aria-label="Здоров’я отамана"><div class="hp-row"><b>❤️ Здоров’я отамана</b><strong id="healthCount">100 / 100 HP</strong></div><div class="hp-track"><div id="healthFill" class="hp-fill"></div></div><div class="hp-actions"><span id="healthHint">Відпочинок: +1 HP / 2 хв</span><button id="healFoodBtn" type="button">🌾 Лікувати: 12 їжі → +35 HP</button></div></section><div class="mapframe"><canvas id="world" width="800" height="800" aria-label="Ігрова карта Січі"></canvas><div class="maptag">🏕️ СІЧ · РІВЕНЬ <span id="sichlevel">1</span></div><div class="tip" id="hint">Торкнися дороги, щоб козак пішов туди</div></div><section class="panel"><div class="tabline"><button class="tab active" data-tab="build">🏠 Будівлі</button><button class="tab" data-tab="quests">📜 Завдання</button><button class="tab" data-tab="hero">🧔 Козак</button><button class="tab" data-tab="army">🛡️ Військо</button><button class="tab" data-tab="battle">⚔️ Бій</button><button class="tab" data-tab="adventure">🧭 Пригоди</button><button class="tab" data-tab="lands">🗺️ Землі</button><button class="tab" data-tab="awards">🏆 Нагороди</button></div><div id="content"></div></section><section class="cloudtest" id="cloudPanel" aria-label="Хмарне збереження тестової версії">
+<h2>☁️ Хмарне збереження · ТЕСТ</h2>
+<p>При запуску гра перевіряє хмару автоматично. Якщо виявлено новий пристрій або іншу версію, вибір залишиться за тобою. Автозбереження вмикається лише за згодою.</p>
+<p id="cloudStatus" role="status">⏳ Хмара ще не перевірена.</p>
+<label style="display:flex;align-items:center;gap:9px;margin-top:12px;font-size:13px"><input type="checkbox" id="autoSyncToggle" style="width:19px;height:19px"> Автозбереження після ігрових дій (тест)</label><div class="cloudbuttons"><button type="button" id="cloudCheck">🔍 Перевірити хмару</button><button type="button" id="cloudSave" disabled>☁️ Зберегти у хмару</button><button type="button" id="cloudLoad" disabled>📥 Завантажити із хмари</button></div>
+<p>⚠️ УВАГА: тестовий клієнт передає весь стан. Не використовуйте як публічну змагальну версію. Автозбереження не захищає від накрутки ресурсів. Не використовуйте це як публічну змагальну версію.</p>
+</section><footer class="foot">СІЧ v2.6 Жива анімація · Test · Експериментальна хмарна синхронізація · Онлайн-рейтинги згодом</footer></main><button class="launch-return hide" id="sichMenu" type="button" title="На головний екран">☰ Меню</button><div class="arenaOverlay" id="arena" role="dialog" aria-modal="true" aria-label="Арена бою"><div class="arenaBox"><div class="arenaTitle">⚔️ КОЗАЦЬКА АРЕНА</div><div class="arenaDesc" id="arenaRound">Військо проти розбійника</div><div class="combatants"><div class="fighter" id="ourFighter"><div class="avatar" id="heroAvatar"><img src="assets/v22-otaman.webp" alt="Отаман — новий вигляд" /></div><b id="ourName">Отаман</b><div class="squad" id="squad" aria-label="Козацька дружина"></div><div class="hpbar"><div class="hpfill" id="ourBar"></div></div><span class="hptext" id="ourHP">100 / 100</span></div><div class="fighter enemy" id="enemyFighter"><div class="avatar" id="enemyAvatar"><img src="assets/v22-bandit.webp" alt="Розбійник — новий вигляд" /></div><b id="enemyName">Розбійник</b><div class="hpbar"><div class="hpfill" id="enemyBar"></div></div><span class="hptext" id="enemyHP">100 / 100</span></div></div><div class="fightlog" id="fightLog" aria-live="polite">Козаки готові до битви!</div><div class="arenaActions"><button class="btn" id="strikeBtn">⚔️ Ударити</button><button class="btn secondary" id="autoBtn">▶ Автобій</button><button class="btn secondary" id="exitArenaBtn">Вийти</button></div></div></div><div class="toast hide" id="toast"></div><script>
+(()=>{'use strict';
+// Telegram SDK: client-side display only. Do not trust initDataUnsafe for server-side identity or payments.
+const tg=window.Telegram?.WebApp;
+try{
+ if(tg){tg.ready();tg.expand();tg.setHeaderColor?.('#16352a');tg.setBackgroundColor?.('#0e201d');
+ const user=tg.initDataUnsafe?.user;
+ const label=document.getElementById('tgStatus');
+ if(user && tg.initData){const labelName=[user.first_name,user.last_name].filter(Boolean).join(' ');
+ label.textContent='✅ Telegram Mini App · Вітаємо, '+(labelName || 'козаче')+'! · Локальний прогрес';
+ }else {label.textContent='⚔️ Telegram Mini App · Тестовий режим · Локальний прогрес';}
+ }
+}catch(e){console.warn('Telegram SDK init skipped',e)}
+const KEY='kozak_online_v3';const defs=[{id:'hut',title:'Курінь',emoji:'🏠',desc:'Оселя козака. Покращуй, щоб зміцнювати Січ.',base:200,gain:0,x:390,y:335},{id:'forge',title:'Кузня',emoji:'⚒️',desc:'Виробляє 30 монет за збір.',base:250,gain:30,x:577,y:411},{id:'farm',title:'Господарство',emoji:'🌾',desc:'Виробляє 25 монет за збір.',base:180,gain:25,x:221,y:487},{id:'tower',title:'Вартова вежа',emoji:'🗼',desc:'Охороняє Січ. Додає престиж.',base:300,gain:0,x:600,y:230},{id:'stable',title:'Стайня',emoji:'🐎',desc:'Готує коней до походів: +3 бойової сили та +5 здоров’я за рівень.',base:320,gain:0,x:225,y:320}];let state;try{state=JSON.parse(localStorage.getItem(KEY))}catch(e){}if(!state||!state.buildings){let old;try{old=JSON.parse(localStorage.getItem('kozak_online_v2'))||JSON.parse(localStorage.getItem('kozak_online_v1'))}catch(e){}state=old&&old.buildings?old:{coins:500,xp:0,name:'Отаман',buildings:{hut:1,forge:0,farm:0,tower:0},lastCollect:0,claimed:{},created:Date.now()}}state.buildings.stable=Math.max(0,Math.min(20,Number(state.buildings.stable)||0));state.wood=Number.isFinite(state.wood)?state.wood:30;state.food=Number.isFinite(state.food)?state.food:20;state.lastWood=state.lastWood||0;state.lastFood=state.lastFood||0;state.steps=state.steps||0;state.passiveAt=state.passiveAt||Date.now();state.battles=state.battles||{wins:0,losses:0,last:0};state.lumber=state.lumber||0;state.hero=state.hero||{x:390,y:559};state.army=state.army||{recruits:0,training:0,stance:'balanced',enemy:'bandit'};state.army.recruits=Math.max(0,Number(state.army.recruits)||0);state.army.training=Math.max(0,Number(state.army.training)||0);state.land=Number.isFinite(state.land)?Math.max(0,Math.min(2,state.land)):0;state.achievements=state.achievements||[];state.adventure=state.adventure||{cleared:[],selected:0,attempts:0};if(!Array.isArray(state.adventure.cleared))state.adventure.cleared=[];// v1.9: health persists in the existing game state; older saves start with full HP.
+function maxHealth(){return 100+state.army.recruits*13+state.army.training*7+state.buildings.stable*5}
+function healthReady(){const mx=maxHealth();if(!state.health||typeof state.health!=="object")state.health={hp:mx,restAt:Date.now()};state.health.hp=Math.max(0,Math.min(mx,Number(state.health.hp)||0));if(!Number.isFinite(state.health.restAt))state.health.restAt=Date.now();return mx}
+function restHealth(){const mx=healthReady(),h=state.health,now=Date.now();if(now<h.restAt)h.restAt=now;const ticks=Math.min(240,Math.floor((now-h.restAt)/120000));if(ticks>0){h.hp=Math.min(mx,h.hp+ticks);h.restAt+=ticks*120000;if(h.hp===mx)h.restAt=now;safe()}}
+function paintHealth(){restHealth();const mx=maxHealth(),hp=state.health.hp;const count=document.getElementById("healthCount"),fill=document.getElementById("healthFill"),button=document.getElementById("healFoodBtn"),hint=document.getElementById("healthHint");if(!count||!fill)return;count.textContent=hp+" / "+mx+" HP";fill.style.width=(100*hp/mx)+"%";if(button)button.disabled=hp>=mx||state.food<12;if(hint)hint.textContent=hp>=mx?"✅ Отаман повністю здоровий":"🕐 Відпочинок: +1 HP кожні 2 хв (до 8 год офлайн)"}
+function healFood(){if(combat&&!combat.over)return show("Спочатку заверши бій");restHealth();if(state.health.hp>=maxHealth())return show("❤️ Здоров’я вже повне");if(state.food<12)return show("Для лікування потрібно 12 🌾");state.food-=12;state.health.hp=Math.min(maxHealth(),state.health.hp+35);state.health.restAt=Date.now();show("❤️ Відновлено до "+state.health.hp+" HP за 12 🌾");update()}
+const $=x=>document.getElementById(x), canvas=$('world'),ctx=canvas.getContext('2d');let tab='build',selected='hut',toastTimer,heroTarget=null,walkPhase=0,lastFrame=0;const safe=()=>{try{localStorage.setItem(KEY,JSON.stringify(state))}catch(e){}};// TEST ONLY: client-controlled state is not safe for competitive or paid play.
+const CLOUD_URL='https://ghjgwmfqtkmkhpqodetj.supabase.co/functions/v1/sich-save';
+let cloudRevision=null, cloudSnapshot=null, cloudBusy=false;
+const autoToggle=document.getElementById('autoSyncToggle');
+const AUTO_KEY='sich_v12_autosync_optin';
+const BASE_KEY='sich_v12_confirmed_cloud';
+const RESTORE_KEY='sich_v12_restored';
+let autoArmed=false, syncTimer=null, autoSaving=false, localDirty=false;
+// Carry over opt-in from v1.1; this does not start uploading until cloud state is verified.
+autoToggle.checked=localStorage.getItem(AUTO_KEY)==='yes'||(localStorage.getItem(AUTO_KEY)===null&&localStorage.getItem('sich_v11_autosync_optin')==='yes');
+const cStatus=document.getElementById('cloudStatus');
+const cCheck=document.getElementById('cloudCheck'), cSave=document.getElementById('cloudSave'), cLoad=document.getElementById('cloudLoad');
+const cloudIdentity=()=>Boolean(tg?.initData);
+const snapshotOf=()=>JSON.parse(JSON.stringify(state));
+const same=(a,b)=>JSON.stringify(a)===JSON.stringify(b);
+function cMessage(message){cStatus.textContent=message;}
+function cButtons(){cCheck.disabled=cloudBusy||autoSaving;cSave.disabled=cloudBusy||autoSaving||cloudRevision===null;cLoad.disabled=cloudBusy||autoSaving||!cloudSnapshot;}
+function stopAuto(){autoArmed=false;clearTimeout(syncTimer);syncTimer=null;}
+function rememberCloud(snapshot,revision){
+  try{localStorage.setItem(BASE_KEY,JSON.stringify({revision,snapshot}));}catch(e){console.warn('Cannot cache sync baseline',e);}
+}
+function rememberedCloud(){try{return JSON.parse(localStorage.getItem(BASE_KEY)||'null');}catch{return null;}}
+function armAuto(){
+ autoArmed=autoToggle.checked&&cloudRevision!==null;
+ if(autoArmed)cMessage('☁️ Синхронізація активна · версія '+cloudRevision);
+}
+autoToggle.addEventListener('change',()=>{
+ localStorage.setItem(AUTO_KEY,autoToggle.checked?'yes':'no');
+ if(!autoToggle.checked){stopAuto();cMessage('⏸️ Автозбереження вимкнено.');return;}
+ if(cloudRevision===null){cMessage('ℹ️ Перевіряємо хмару перед автозбереженням.');if(cloudIdentity())cConnect();return;}
+ const base=rememberedCloud();
+ if(base&&base.revision===cloudRevision&&same(base.snapshot,cloudSnapshot)){
+   armAuto();if(!same(state,base.snapshot))scheduleAutoSync();
+ }else cMessage('⚠️ Спершу вручну обери «Зберегти» або «Завантажити»; автоматично не перезаписуємо.');
+});
+async function cRequest(action,extra={}){
+ if(!cloudIdentity())throw Error('Відкрий гру через кнопку «⚔️ Грати» у Telegram.');
+ const response=await fetch('https://ghjgwmfqtkmkhpqodetj.supabase.co/functions/v1/sich-save',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action,initData:tg.initData,...extra})});
+ let result;try{result=await response.json()}catch{throw Error('Сервер повернув неочікувану відповідь ('+response.status+').')}
+ if(!response.ok)throw Error((result?.error||'Помилка сервера')+' (HTTP '+response.status+')');return result;
+}
+async function cConnect(){
+ stopAuto();cloudBusy=true;cButtons();cMessage('⏳ Звіряємо прогрес із хмарою...');
+ try{
+  const result=await cRequest('load');cloudRevision=result.revision;cloudSnapshot=result.state;
+  const restore=localStorage.getItem(RESTORE_KEY)==='yes';localStorage.removeItem(RESTORE_KEY);
+  const base=rememberedCloud();
+  // The trusted baseline proves this exact server revision was confirmed on this device.
+  // Local actions or passive production can legitimately change state after that point.
+  if(cloudSnapshot&&base&&base.revision===cloudRevision&&same(base.snapshot,cloudSnapshot)){
+    if(autoToggle.checked){
+      armAuto();if(!same(state,cloudSnapshot)){localDirty=true;scheduleAutoSync();}
+      else cMessage('✅ ☁️ Збережено · версія '+cloudRevision);
+    }else cMessage('✅ Січ синхронізована · версія '+cloudRevision+'. Автозбереження вимкнено.');
+  }else if(cloudSnapshot){
+    // Unknown/newer remote revision: never silently replace local or remote.
+    cMessage('⚠️ Хмарна Січ (версія '+cloudRevision+') потребує вибору. Обери «Завантажити» або «Зберегти» вручну.');
+  }else cMessage('✅ Хмара доступна! Збереження ще немає. Створи його вручну.');
+ }catch(e){cloudRevision=null;cloudSnapshot=null;stopAuto();cMessage('❌ '+e.message)}
+ finally{cloudBusy=false;cButtons()}
+}
+async function cSaveNow(){
+ if(cloudRevision===null)return;
+ if(!confirm(cloudSnapshot?'Замінити хмарну Січ поточним локальним прогресом?':'Створити перше хмарне збереження?'))return;
+ stopAuto();cloudBusy=true;cButtons();cMessage('⏳ Зберігаємо у хмару...');
+ try{
+  const snapshot=snapshotOf();const result=await cRequest('save',{state:snapshot,revision:cloudRevision});
+  cloudRevision=result.revision;cloudSnapshot=snapshot;localDirty=!same(state,snapshot);rememberCloud(snapshot,cloudRevision);
+  armAuto();cMessage('✅ Січ збережена! Версія '+cloudRevision+'.'+(autoArmed?' Автозбереження активне.':''));
+ }catch(e){stopAuto();cloudRevision=null;cloudSnapshot=null;cMessage('❌ '+e.message+'; натисни «Перевірити хмару».');}
+ finally{cloudBusy=false;cButtons()}
+}
+function cLoadNow(){
+ if(!cloudSnapshot)return;
+ if(!confirm('Завантаження замінить локальний прогрес. Створити резервну копію та відновити Січ із хмари?'))return;
+ try{
+  stopAuto();localStorage.setItem('sich_cloud_backup_'+Date.now(),JSON.stringify(state));
+  // Pin confirmed revision across reload; startup may mutate passive production timestamps.
+  rememberCloud(cloudSnapshot,cloudRevision);
+  localStorage.setItem(KEY,JSON.stringify(cloudSnapshot));
+  localStorage.setItem(RESTORE_KEY,'yes');
+  location.reload();
+ }catch(e){cMessage('❌ Не вдалося відновити резервну копію: '+e.message)}
+}
+async function autosaveNow(){
+ if(!autoArmed||!autoToggle.checked||cloudBusy||autoSaving||cloudRevision===null||!localDirty||!cloudIdentity())return;
+ clearTimeout(syncTimer);syncTimer=null;autoSaving=true;cButtons();
+ try{
+  const snapshot=snapshotOf();const result=await cRequest('save',{state:snapshot,revision:cloudRevision});
+  cloudRevision=result.revision;cloudSnapshot=snapshot;rememberCloud(snapshot,cloudRevision);
+  localDirty=!same(state,snapshot);cMessage('☁️ Автозбережено · версія '+cloudRevision);
+ }catch(e){stopAuto();autoToggle.checked=false;localStorage.setItem(AUTO_KEY,'no');cMessage('⚠️ Автозбереження зупинено: '+e.message+'. Перевір хмару вручну.');}
+ finally{autoSaving=false;cButtons();if(localDirty&&autoArmed)scheduleAutoSync()}
+}
+function scheduleAutoSync(){
+ if(!autoArmed||!autoToggle.checked)return;
+ localDirty=true;clearTimeout(syncTimer);syncTimer=setTimeout(autosaveNow,4500);
+}
+cCheck.addEventListener('click',cConnect);cSave.addEventListener('click',cSaveNow);cLoad.addEventListener('click',cLoadNow);
+if(!cloudIdentity())cMessage('ℹ️ Відкрий СІЧ через кнопку бота у Telegram.');
+cButtons();
+// Verify remote revision automatically on each Telegram launch; never overwrite without a trusted baseline.
+if(cloudIdentity())cConnect();
+document.getElementById('sichPlay').addEventListener('click', () => {
+  if (cloudRevision === null && !cloudBusy && cloudIdentity()) cConnect();
+});
+const level=()=>1+Math.floor(state.xp/160);const cost=d=>Math.round(d.base*Math.pow(1.7,state.buildings[d.id]||0));const today=()=>new Date().toLocaleDateString('en-CA');const questDefs=[{id:'upgrade',name:'Покращити будь-яку будівлю',goal:1,bonus:100},{id:'earn',name:'Зібрати монети з господарства',goal:1,bonus:80},{id:'explore',name:'Оглянути всі будівлі',goal:4,bonus:70}];state.daily=state.daily||{};if(state.daily.date!==today())state.daily={date:today(),upgrade:0,earn:0,explore:0,viewed:[],claimed:[]};
+function show(msg){$('toast').textContent=msg;$('toast').classList.remove('hide');clearTimeout(toastTimer);toastTimer=setTimeout(()=>$('toast').classList.add('hide'),2300)}function update(){ $('coins').textContent=state.coins.toLocaleString('uk-UA');$('xp').textContent=state.xp;$('wood').textContent=state.wood;$('food').textContent=state.food;$('prestige').textContent=state.buildings.tower*10+state.buildings.hut*5+state.buildings.stable*4;$('sichlevel').textContent=level();$('identity').textContent=state.name+' · Рівень '+level();render();draw();safe();if(autoArmed)scheduleAutoSync() }
+function actionUpgrade(id){const d=defs.find(x=>x.id===id),price=cost(d),woodCost=id==='hut'?0:10+10*(state.buildings[id]||0),foodCost=id==='tower'?10:0;if(state.coins<price||state.wood<woodCost||state.food<foodCost)return show('Недостатньо ресурсів: треба '+price+' 🪙 '+woodCost+' 🪵 '+foodCost+' 🌾');state.coins-=price;state.wood-=woodCost;state.food-=foodCost;state.buildings[id]=(state.buildings[id]||0)+1;state.xp+=45;state.daily.upgrade++;show('🏗️ '+d.title+' покращено! +45 досвіду');update()}
+function passive(){const now=Date.now(),elapsed=Math.min(now-state.passiveAt,8*3600000),ticks=Math.floor(elapsed/60000);if(ticks>0){state.passiveAt+=ticks*60000;const wood=Math.min(200,ticks*2*Math.max(0,state.buildings.tower));const food=Math.min(200,ticks*3*Math.max(0,state.buildings.farm));state.wood+=wood;state.food+=food;if(wood||food)show('⏳ Вироблено: '+wood+' 🪵 та '+food+' 🌾');safe()}}passive();let combat=null,autoTimer=null;const MAX_HP=100;const foes={bandit:{name:'Розбійник',icon:'🥷',hp:90,power:9,prize:80,food:8},raiders:{name:'Загін грабіжників',icon:'🏴‍☠️',hp:135,power:23,prize:140,food:12},chieftain:{name:'Отаман розбійників',icon:'👹',hp:190,power:34,prize:230,food:18}};const chapters=[
+{id:'meadow',name:'Степова стежка',icon:'🌾',description:'Розвідка біля Січі: невеликий табір розбійників.',foe:'bandit',reward:90,wood:15,xp:35,required:0},
+{id:'forest',name:'Темний бір',icon:'🌲',description:'У лісі ховається загін грабіжників.',foe:'raiders',reward:170,wood:30,xp:55,required:1},
+{id:'ford',name:'Дніпровський брід',icon:'🌊',description:'Переправа під охороною досвідченого ватажка.',foe:'chieftain',reward:280,wood:45,xp:80,required:2},
+{id:'fort',name:'Забута фортеця',icon:'🏰',description:'Головний бос походу. Підготуй військо!',foe:'boss',reward:550,wood:100,xp:150,required:3}];
+foes.boss={name:'Ватажок фортеці',icon:'👑',hp:270,power:43,prize:0,food:26};
+function adventureFight(index){const z=chapters[index],a=state.adventure;if(!z||a.cleared.includes(z.id))return;if(index>0&&!a.cleared.includes(chapters[index-1].id))return show('🔒 Спочатку пройди попередній етап');if(combat)return show('Бій уже триває');state.army.enemy=z.foe;const oldFood=state.food;const oldLast=state.battles.last;fight();if(combat){combat.chapterId=z.id;a.attempts++;safe()}else if(state.food===oldFood&&state.battles.last===oldLast)show('Підготуй припаси для походу')}
+function adventureRender(root){const intro=el('div','card');intro.append(el('div','name','🧭 Карта пригод'),el('div','small','Проходь локації по черзі, перемагай розбійників і відкрий фінальну фортецю. За першу перемогу на кожній локації — особлива нагорода.'));root.append(intro);const trail=el('div','adventureTrail');chapters.forEach((z,i)=>{const done=state.adventure.cleared.includes(z.id),locked=i>0&&!state.adventure.cleared.includes(chapters[i-1].id);const c=el('div','adventureNode'+(done?' done':'')+(locked?' locked':''));const head=el('div','row'),t=el('div');t.append(el('div','name',z.icon+' '+(i+1)+'. '+z.name),el('div','small',z.description));head.append(t,el('span','badge',done?'✅ Пройдено':locked?'🔒 Замкнено':'⚔️ Доступно'));c.append(head);c.append(el('div','small','Перша перемога: '+z.reward+' 🪙 · '+z.wood+' 🪵 · '+z.xp+' ⭐'));const foe=foes[z.foe];c.append(el('div','small','Супротивник: '+foe.name+' · '+foe.hp+' HP · '+foe.food+' 🌾'));c.append(btn(done?'✅ Переможено':locked?'🔒 Недоступно':'⚔️ Рушити у похід',()=>adventureFight(i),done||locked||state.food<foe.food||Date.now()-state.battles.last<45000));trail.append(c)});root.append(trail);root.append(el('div','small','🏆 Пройдено '+state.adventure.cleared.length+' з '+chapters.length+' · Бій можна повторити у вкладці «Бій». Прогрес пригод зберігається у браузері.'))}
+const styles={balanced:{name:'Збалансована',attack:1,defense:1},attack:{name:'Наступ',attack:1.2,defense:.87},defend:{name:'Оборона',attack:.88,defense:1.3}};
+function paintCombat(){if(!combat)return;const c=combat;$('squad').replaceChildren(...Array.from({length:Math.min(state.army.recruits,12)},(_,i)=>{const n=document.createElement('span');n.textContent=i%4===0?'🛡️':'⚔️';return n}));$('ourName').textContent=state.name;$('ourHP').textContent=c.ourHP+' / '+MAX_HP;$('enemyHP').textContent=c.enemyHP+' / '+c.enemyMaxHP;$('ourBar').style.width=(100*c.ourHP/c.ourMaxHP)+'%';$('enemyBar').style.width=(100*c.enemyHP/c.enemyMaxHP)+'%';$('ourHP').textContent=c.ourHP+' / '+c.ourMaxHP;$('strikeBtn').disabled=c.over;$('autoBtn').disabled=c.over;$('exitArenaBtn').textContent=c.over?'Закрити':'Відступити';}
+function combatLog(t){$('fightLog').textContent=t}
+function stopAuto(){if(autoTimer){clearInterval(autoTimer);autoTimer=null}$('autoBtn').textContent='▶ Автобій'}
+function closeArena(){stopAuto();if(combat&&!combat.over){state.health.hp=combat.ourHP;state.health.restAt=Date.now();combat.over=true;state.battles.losses++;state.xp+=8;safe();update();show('🛡️ Військо відступило')}combat=null;$('arena').classList.remove('show')}
+function finishCombat(won){const c=combat;if(!c||c.over)return;c.over=true;stopAuto();state.health.hp=c.ourHP;state.health.restAt=Date.now();if(won){let prize=c.foe.prize+Math.floor(Math.random()*35),experience=40,extra='';if(c.chapterId){const chapter=chapters.find(z=>z.id===c.chapterId);if(chapter&&!state.adventure.cleared.includes(chapter.id)){state.adventure.cleared.push(chapter.id);prize+=chapter.reward;state.wood+=chapter.wood;experience+=chapter.xp;extra=' · '+chapter.wood+' 🪵';}}state.coins+=prize;state.xp+=experience;state.battles.wins++;$('arenaRound').textContent='🏆 Перемога!';combatLog('🏆 Перемога над «'+c.foe.name+'»! +'+prize+' 🪙, +'+experience+' ⭐'+extra)}else{state.battles.losses++;state.xp+=8;$('arenaRound').textContent='🛡️ Поразка';combatLog('Військо відступає! +8 ⭐. Покращуй кузню та вежу.')}paintCombat();update()}
+function strike(){const c=combat;if(!c||c.over)return;let attack=Math.max(5,Math.round((13+Math.floor(Math.random()*8)+Math.floor(c.power/4))*c.style.attack));c.enemyHP=Math.max(0,c.enemyHP-attack);$('heroAvatar').classList.remove('swing');void $('heroAvatar').offsetWidth;$('heroAvatar').classList.add('swing');$('enemyFighter').classList.add('hit');setTimeout(()=>$('enemyFighter').classList.remove('hit'),170);if(c.enemyHP===0){finishCombat(true);return}let damage=Math.max(2,Math.round(((4+Math.random()*4+c.enemy/7-c.power/12)/c.style.defense)*(c.foe===foes.bandit?0.72:1)));c.ourHP=Math.max(0,c.ourHP-damage);$('ourFighter').classList.add('hit');setTimeout(()=>$('ourFighter').classList.remove('hit'),170);combatLog('Твій удар: −'+attack+' HP. '+c.foe.name+' відповідає: −'+damage+' HP.');if(c.ourHP===0){finishCombat(false);return}paintCombat()}
+function battleBlockReason(foe){restHealth();const missing=[];const remaining=Math.max(0,45000-(Date.now()-state.battles.last));if(remaining>0)missing.push('⏳ Зачекай '+Math.ceil(remaining/1000)+' с до нового походу');if(state.health.hp<20)missing.push('❤️ Замало здоров’я: '+state.health.hp+'/20 HP (лікуйся або відпочинь)');if(state.food<foe.food)missing.push('🌾 Недостатньо їжі: '+state.food+'/'+foe.food+' (ще '+(foe.food-state.food)+')');return missing;}
+function fight(){if(combat)return;const now=Date.now(),cd=45000;if(now-state.battles.last<cd)return show('Козаки відпочивають ще '+Math.ceil((cd-(now-state.battles.last))/1000)+' с');const foe=foes[state.army.enemy]||foes.bandit;restHealth();if(state.health.hp<20)return show("❤️ Замало здоров’я для походу. Відпочинь або полікуйся");if(state.food<foe.food)return show('🌾 Недостатньо їжі: '+state.food+'/'+foe.food+' (ще '+(foe.food-state.food)+')');state.food-=foe.food;state.battles.last=now;const armyPower=state.army.recruits*4+state.army.training*(2+state.army.recruits);const ourMaxHP=100+state.army.recruits*13+state.army.training*7+state.buildings.stable*5;combat={ourHP:state.health.hp,ourMaxHP,enemyHP:foe.hp,enemyMaxHP:foe.hp,over:false,foe,style:styles[state.army.stance]||styles.balanced,power:8+level()*3+state.buildings.tower*5+state.buildings.forge*4+state.buildings.stable*3+armyPower,enemy:foe.power+Math.floor(Math.random()*7)};$('arenaRound').textContent='Військо ('+state.army.recruits+' воїнів) проти: '+foe.name;$('enemyName').textContent=foe.name;$('enemyAvatar').replaceChildren((()=>{const img=document.createElement('img');img.src='assets/v22-bandit.webp';img.alt=foe.name;return img})());combatLog('Тактика: '+combat.style.name+'. Витрачено '+foe.food+' 🌾. До бою!');$('arena').classList.add('show');paintCombat();update()}
+function recruit(){const a=state.army,price=100+30*a.recruits;if(a.recruits>=12)return show('Військо заповнена (12 воїнів)');if(state.coins<price||state.food<12)return show('Потрібно '+price+' 🪙 і 12 🌾');state.coins-=price;state.food-=12;a.recruits++;state.xp+=10;show('🛡️ Новий козак у війську!');update()}
+function trainArmy(){const a=state.army,price=75+75*a.training;if(!a.recruits)return show('Спочатку найми козака');if(a.training>=8)return show('Найвищий рівень тренувань');if(state.coins<price||state.wood<15)return show('Потрібно '+price+' 🪙 і 15 🪵');state.coins-=price;state.wood-=15;a.training++;state.xp+=20;show('💪 Військо стала сильнішою!');update()}
+$('healFoodBtn').onclick=healFood;$('strikeBtn').onclick=strike;$('exitArenaBtn').onclick=closeArena;$('autoBtn').onclick=()=>{if(!combat||combat.over)return;if(autoTimer){stopAuto();return}autoTimer=setInterval(()=>{if(!combat||combat.over){stopAuto();return}strike()},750);$('autoBtn').textContent='⏸ Пауза'};
+function forage(type){const now=Date.now(),key=type==='wood'?'lastWood':'lastFood',elapsed=now-state[key],wait=45000;if(elapsed<wait)return show('Спробуй через '+Math.ceil((wait-elapsed)/1000)+' с');const amount=type==='wood'?15+state.buildings.tower*4:15+state.buildings.farm*8;state[type]+=amount;state[key]=now;state.xp+=5;show((type==='wood'?'🪵 +':'🌾 +')+amount+' · +5 досвіду');update()}function collect(){const producers=defs.filter(d=>d.gain&&state.buildings[d.id]>0);if(!producers.length)return show('Спершу збудуй кузню або господарство');const cool=120000;let remaining=cool-(Date.now()-state.lastCollect);if(remaining>0)return show('Ресурси ще готуються: '+Math.ceil(remaining/1000)+' с');const sum=producers.reduce((a,d)=>a+d.gain*(state.buildings[d.id]||0),0);state.coins+=sum;state.lastCollect=Date.now();state.daily.earn++;state.xp+=10;show('🪙 Зібрано '+sum+' монет!');update()}
+function claim(id){const q=questDefs.find(q=>q.id===id);if(state.daily.claimed.includes(id))return;const progress=id==='explore'?state.daily.viewed.length:state.daily[id]||0;if(progress<q.goal)return;state.daily.claimed.push(id);state.coins+=q.bonus;state.xp+=20;show('🎁 Нагорода: '+q.bonus+' монет та 20 досвіду');update()}
+function el(tag,cls,text){let e=document.createElement(tag);if(cls)e.className=cls;if(text!==undefined)e.textContent=text;return e}function btn(text,fn,disabled=false,secondary=false){let b=el('button','btn'+(secondary?' secondary':''),text);b.disabled=disabled;b.onclick=fn;return b}
+function render(){paintHealth();let root=$('content');root.replaceChildren();document.querySelectorAll('[data-tab]').forEach(b=>b.classList.toggle('active',b.dataset.tab===tab));if(tab==='adventure'){adventureRender(root)} else if(tab==='build'){const d=defs.find(d=>d.id===selected);const card=el('div','card');const row=el('div','row');const name=el('div');name.append(el('div','name',d.emoji+' '+d.title),el('div','small',d.desc));row.append(name,el('span','badge','Рівень '+(state.buildings[d.id]||0)));card.append(row);card.append(el('div','small',state.buildings[d.id]?'Наступне покращення':'Ще не збудовано'));let actions=el('div','row');actions.style.marginTop='12px';actions.append(btn('🪙 '+cost(d)+' · '+(state.buildings[d.id]?'Покращити':'Збудувати'),()=>actionUpgrade(d.id),state.coins<cost(d)||(d.id!=='hut'&&state.wood<10+10*(state.buildings[d.id]||0))||(d.id==='tower'&&state.food<10)));if(d.gain)actions.append(btn('🌾 Зібрати',collect,!defs.some(x=>x.gain&&state.buildings[x.id])||Date.now()-state.lastCollect<120000,true));card.append(actions);card.append(el('div','small','Для будівництва: '+(d.id==='hut'?0:10+10*(state.buildings[d.id]||0))+' 🪵'+(d.id==='tower'?' та 10 🌾':'')));root.append(card);const resources=el('div','card');resources.append(el('div','name','🌲 Збирай припаси'));resources.append(el('div','small','Дерево і їжу можна збирати раз на 45 секунд. Прокачуй господарство, щоб отримувати більше їжі.'));const rb=el('div','resourcebar');rb.style.marginTop='12px';rb.append(btn('🪵 Дерево +',()=>forage('wood'),false,true),btn('🌾 Їжа +',()=>forage('food'),false,true));resources.append(rb);resources.append(el('div','small','⏳ Автовиробництво щохвилини: вежа +2 дерева/рівень, господарство +3 їжі/рівень (до 8 годин офлайн).'));root.append(resources);const all=el('div','card');all.append(el('div','name','Будівлі Січі'));const r=el('div','row');r.style.flexWrap='wrap';r.style.marginTop='10px';defs.forEach(v=>{const b=btn(v.emoji+' '+v.title,()=>choose(v.id),false,true);b.style.flex='1 1 42%';r.append(b)});all.append(r);root.append(all)} else if(tab==='quests'){root.append(el('div','small','Щоденні завдання оновлюються за датою на твоєму пристрої.'));questDefs.forEach(q=>{const done=state.daily.claimed.includes(q.id),n=q.id==='explore'?state.daily.viewed.length:(state.daily[q.id]||0);const c=el('div','card'),r=el('div','row'),t=el('div');t.append(el('div','name',q.name),el('div','small',Math.min(n,q.goal)+'/'+q.goal+' · Нагорода: '+q.bonus+' 🪙'));r.append(t,btn(done?'Отримано':n>=q.goal?'Забрати':'Не готово',()=>claim(q.id),done||n<q.goal));c.append(r);const p=el('div','progress'),fill=el('div');fill.style.width=Math.min(100,100*n/q.goal)+'%';p.append(fill);c.append(p);root.append(c)})} else if(tab==='lands'){const c=el('div','card');c.append(el('div','name','🗺️ Нові землі Січі'),el('div','small','Розширюй поселення й відкривай нові ділянки. Побачиш нові місця, дерева й сторожові пости прямо на мапі.'));root.append(c);const zones=[['🌲 Північний гай',450,35,'Додатковий ліс та стежки'],['🌊 Дніпровський берег',800,70,'Річка, човен і нове місце для поселення']];zones.forEach(([name,price,wood,desc],i)=>{const owned=state.land>i,locked=state.land<i,card=el('div','card');card.append(el('div','name',name),el('div','small',desc),el('div','small',owned?'✅ Відкрито':locked?'🔒 Спочатку відкрий попередню ділянку':`Вартість: ${price} 🪙 та ${wood} 🪵`));card.append(btn(owned?'Уже відкрито':locked?'Недоступно':'Відкрити територію',()=>{if(state.land!==i)return;if(state.coins<price||state.wood<wood)return show('Недостатньо монет або дерева');state.coins-=price;state.wood-=wood;state.land++;state.xp+=75;show('🗺️ Нова територія відкрита! +75 ⭐');update()},owned||locked||state.coins<price||state.wood<wood));root.append(card)})} else if(tab==='awards'){const achievements=[['explorer','🧭','Перший похід','Пройти першу пригоду',state.adventure.cleared.length>=1],['conqueror','👑','Підкорювач фортеці','Перемогти фінального боса',state.adventure.cleared.includes('fort')],['first','🏡','Основа Січі','Покращити курінь до 2 рівня',state.buildings.hut>=2],['army','🛡️','Справжня дружина','Найняти 3 козаків',state.army.recruits>=3],['victory','⚔️','Перша перемога','Перемогти в 1 бою',state.battles.wins>=1],['veteran','🏆','Гроза розбійників','Виграти 10 боїв',state.battles.wins>=10],['land','🗺️','Нові обрії','Відкрити нову територію',state.land>=1],['master','⚒️','Майстер Січі','Розвинути кузню до 2 рівня',state.buildings.forge>=2]];root.append(el('div','card','🏆 Досягнення: '+achievements.filter(a=>a[4]).length+' / '+achievements.length));achievements.forEach(([id,emoji,name,desc,done])=>{const c=el('div','card achievement'+(done?' unlocked':'')),icon=el('div','medal',emoji),body=el('div');body.append(el('div','name',name),el('div','small',desc+' · '+(done?'Виконано ✅':'Ще не виконано')));c.append(icon,body);root.append(c)})} else if(tab==='army'){const a=state.army,c=el('div','card');c.append(el('div','name','🛡️ Твоя козацька дружина'));const warrior=document.createElement('img');warrior.src='assets/v22-kozak.webp';warrior.alt='Козак — новий вигляд';warrior.className='v22-profile';c.append(warrior);c.append(el('div','small','Воїнів: '+a.recruits+' / 12 · Рівень тренування: '+a.training+' / 8. Стайня: '+state.buildings.stable+' рів. (+ '+(state.buildings.stable*3)+' сили, + '+(state.buildings.stable*5)+' HP). Нові козаки підсилюють атаки й збільшують здоров’я у бою.'));let r=el('div','row');r.style.marginTop='14px';r.append(btn('➕ Найняти · '+(100+30*a.recruits)+' 🪙',recruit,a.recruits>=12||state.coins<100+30*a.recruits||state.food<12),btn('💪 Тренувати · '+(75+75*a.training)+' 🪙',trainArmy,!a.recruits||a.training>=8||state.coins<75+75*a.training||state.wood<15,true));c.append(r,el('div','small','Найм: 12 🌾 · Тренування: 15 🪵'));root.append(c);const t=el('div','card');t.append(el('div','name','🎯 Тактика війська'),el('div','small','Обери стиль бою. Наступ б’є сильніше, оборона краще захищає.'));const tr=el('div','row');tr.style.flexWrap='wrap';tr.style.marginTop='12px';for(const [id,o] of Object.entries(styles)){const b=btn((a.stance===id?'✓ ':'')+o.name,()=>{a.stance=id;update()},false,a.stance!==id);b.style.flex='1 1 28%';tr.append(b)}t.append(tr);root.append(t);const next=el('div','card');next.append(el('div','name','⚔️ Готовий до походу?'),el('div','small','У вкладці «Бій» обери суперника. Нові вороги дають більше монет, але вони небезпечніші.'));root.append(next)} else if(tab==='battle'){const c=el('div','card');c.append(el('div','name','⚔️ Похід проти розбійників'));c.append(el('div','small','Обери супротивника, підготуй військо й вирушай у похід. Воїни, тренування і тактика змінюють результат бою.'));const choices=el('div','row');choices.style.flexWrap='wrap';choices.style.marginTop='12px';Object.entries(foes).forEach(([id,o])=>{const b=btn((state.army.enemy===id?'✓ ':'')+o.icon+' '+o.name,()=>{state.army.enemy=id;update()},false,state.army.enemy!==id);b.style.flex='1 1 42%';choices.append(b)});c.append(choices);const f=foes[state.army.enemy]||foes.bandit;c.append(el('div','small','Ворог: '+f.hp+' HP · Складність: '+(state.army.enemy==='bandit'?'Легка':state.army.enemy==='raiders'?'Середня':'Висока')+' · Похід: '+f.food+' 🌾 · Нагорода: від '+f.prize+' 🪙')); const stat=el('div','row');stat.style.margin='15px 0';stat.append(el('span','badge','🏆 '+state.battles.wins+' перемог'),el('span','badge','🛡️ '+state.battles.losses+' відступів'));c.append(stat);const reasons=battleBlockReason(f);c.append(btn('⚔️ Розпочати бій',fight,reasons.length>0));const status=el('div','small',reasons.length?reasons.join(' · '):'✅ Готовий до походу: здоров’я та припасів достатньо');status.style.marginTop='9px';status.style.color=reasons.length?'#ffd99b':'#bde7a9';c.append(status);root.append(c);const a=el('div','card');a.append(el('div','name','🏰 Як посилити військо'));a.append(el('div','small','Наймай козаків та тренуй їх у вкладці «Військо». Кузня, вежа й рівень героя теж додають сили.'));root.append(a)} else {const c=el('div','card');c.append(el('div','name','🧔 Твій козак'));c.append(el('div','small','Ім’я козака'));const art=document.createElement('img');art.src='assets/v22-otaman.webp';art.alt='Оновлений вигляд отамана';art.className='v22-profile';c.append(art);let inp=el('input');inp.value=state.name;inp.maxLength=20;Object.assign(inp.style,{width:'100%',margin:'12px 0',padding:'12px',borderRadius:'10px',border:'1px solid #788768',fontSize:'16px',background:'#132f28',color:'#fff4d9'});c.append(inp,btn('Зберегти ім’я',()=>{state.name=(inp.value.trim()||'Отаман').slice(0,20);update();show('Ім’я збережено')}));c.append(el('div','small','⭐ Досвід: '+state.xp+' · Рівень '+level()));root.append(c);const z=el('div','card');z.append(el('div','name','🎁 Подарунок для новачка'));z.append(el('div','small','Перший раз можна отримати 100 монет.'));z.append(btn(state.claimed.starter?'Уже отримано':'Отримати +100 🪙',()=>{if(state.claimed.starter)return;state.claimed.starter=true;state.coins+=100;show('🎁 +100 монет');update()},!!state.claimed.starter));root.append(z)}}
+function choose(id){selected=id;if(!state.daily.viewed.includes(id)){state.daily.viewed.push(id)}tab='build';$('hint').textContent='Обрано: '+defs.find(d=>d.id===id).title;update()}
+function poly(points,color,stroke='#4c693d',w=2){ctx.beginPath();ctx.moveTo(points[0][0],points[0][1]);points.slice(1).forEach(p=>ctx.lineTo(p[0],p[1]));ctx.closePath();ctx.fillStyle=color;ctx.fill();if(stroke){ctx.strokeStyle=stroke;ctx.lineWidth=w;ctx.stroke()}}function oval(x,y,rx,ry,color){ctx.beginPath();ctx.ellipse(x,y,rx,ry,0,0,Math.PI*2);ctx.fillStyle=color;ctx.fill()}function label(t,x,y,size=20,color='#fff6d8'){ctx.textAlign='center';ctx.font='bold '+size+'px system-ui';ctx.lineWidth=5;ctx.strokeStyle='#24392f';ctx.strokeText(t,x,y);ctx.fillStyle=color;ctx.fillText(t,x,y)}function tree(x,y,s=1){oval(x,y+16*s,19*s,9*s,'#41673f');poly([[x-5*s,y+10*s],[x+6*s,y+10*s],[x+3*s,y-26*s],[x-2*s,y-26*s]],'#735135');for(let o of [[0,-30,28],[-13,-16,21],[13,-17,20]]){oval(x+o[0]*s,y+o[1]*s,o[2]*s,o[2]*.7*s,'#346d3b');oval(x+o[0]*s-5*s,y+o[1]*s-7*s,o[2]*.55*s,o[2]*.4*s,'#63964e')}}// v2.4: richer isometric buildings, same clickable coordinates.
+function v24Beam(x1,y1,x2,y2,width=4,color='#65462b'){ctx.save();ctx.strokeStyle=color;ctx.lineWidth=width;ctx.lineCap='round';ctx.beginPath();ctx.moveTo(x1,y1);ctx.lineTo(x2,y2);ctx.stroke();ctx.restore()}
+function hut(x,y,lv,variant){
+ const isForge=variant===2,w=lv?90:65,h=lv?65:45;
+ ctx.save();oval(x+8,y+54,103,31,'#476b45');
+ // Walls: distinct warm wood and stone foundations
+ poly([[x-w,y],[x,y+35],[x,y+35+h],[x-w,y+h]],isForge?'#8c7660':'#a87a4c','#513e2e',3);
+ poly([[x,y+35],[x+w,y],[x+w,y+h],[x,y+35+h]],isForge?'#756451':'#806043','#4b3828',3);
+ for(let j=1;j<5;j++){let yy=y+8+j*(h/5);v24Beam(x-w+4,yy,x-4,yy+31,2,isForge?'#c1a481':'#d1a46f');v24Beam(x+4,yy+31,x+w-4,yy,2,'#aa8560')}
+ for(let i=0;i<4;i++){let xx=x-w+12+i*(2*w-24)/3;v24Beam(xx,y+5,xx,y+h,3,'#62482f')}
+ // Layered roof silhouette and ridge
+ poly([[x-w-15,y-4],[x,y-84-h*.35],[x+w+15,y-4],[x,y+30]],isForge?'#625649':'#9a552f','#4b3326',6);
+ for(let i=1;i<=6;i++){let t=i/7;v24Beam(x-w-14+(w+14)*t,y-4-(80+h*.35-4)*t,x+(w+14)*t,y+30-(34)*t,2,isForge?'#9b8770':'#cb8950')}
+ v24Beam(x-w-14,y-4,x,y-84-h*.35,5,'#dbb27b');v24Beam(x,y-84-h*.35,x+w+15,y-4,5,'#d1a06c');
+ // Door, brace, window
+ poly([[x-15,y+39],[x+14,y+34],[x+14,y+h+38],[x-15,y+h+44]],'#3a3029','#bc8a50',3);
+ v24Beam(x-10,y+43,x+10,y+h+33,3,'#795535');
+ poly([[x-w+18,y+14],[x-w+42,y+22],[x-w+42,y+45],[x-w+18,y+38]],'#23352a','#deb975',3);
+ if(!isForge){v24Beam(x-3,y-93-h*.35,x-3,y-129-h*.35,4,'#624328');poly([[x,y-127-h*.35],[x+38+Math.sin(performance.now()/360)*6,y-116-h*.35],[x,y-105-h*.35]],'#b54d39','#dfaa65',2)}
+ if(lv>1)label('★',x+64,y-43,24,'#ffcf5b');ctx.restore()
+}
+function forge(x,y,lv){
+ hut(x,y,lv,2);
+ ctx.save();poly([[x+37,y-43],[x+61,y-49],[x+63,y-121],[x+40,y-112]],'#756052','#d0a47b',3);
+ const smokeTime=performance.now()/1000;for(let i=0;i<4;i++){const drift=(smokeTime*.42+i*.24)%1;ctx.save();ctx.globalAlpha=.38*(1-drift);oval(x+65+Math.sin(smokeTime*.8+i)*9+drift*24,y-132-drift*75,10+drift*12,7+drift*8,'#e5dfca');ctx.restore()}
+ oval(x+59,y+54,25,10,'#5a4839');poly([[x+46,y+43],[x+70,y+43],[x+64,y+51],[x+50,y+51]],'#505554','#bea46d',2);
+ label('⚒',x+5,y+22,33);
+ if(lv)label('↟',x+77,y-70,26,'#f5c76c');ctx.restore()
+}
+function farm(x,y,lv){
+ ctx.save(); const t=performance.now()/1000;
+ oval(x+12,y+42,115,30,'#668750');
+ // Wooden grain shed + tiled roof, set behind planting beds.
+ poly([[x-84,y-18],[x-17,y-42],[x+15,y-18],[x+15,y+18],[x-84,y+21]],'#a77b4c','#5b422c',3);
+ poly([[x-91,y-22],[x-37,y-82],[x+21,y-38],[x-26,y-2]],'#8a5736','#e2b877',3);
+ for(let i=0;i<5;i++)v24Beam(x-73+i*16,y-14,x-73+i*16,y+15,2,'#754e32');
+ poly([[x-31,y-3],[x-3,y-12],[x-3,y+20],[x-31,y+20]],'#392e26','#c49c64',2);
+ // Wheat sways gently but remains entirely decorative.
+ for(let i=0;i<5;i++){
+  let bx=x-89+i*35,by=y+45+i*3;
+  poly([[bx-8,by-8],[bx+13,by-16],[bx+51,by+1],[bx+27,by+11]],'#a47739','#d1a04a',2);
+  for(let j=0;j<4;j++){
+   let sway=Math.sin(t*1.4+i*.8+j*.5)*2;
+   v24Beam(bx+8+j*10,by-8+j*2,bx+9+j*10+sway,by-22+j*2,1.8,'#d5b34e');
+   oval(bx+9+j*10+sway,by-23+j*2,3.5,6,'#edc85f');
+  }
+ }
+ if(!lv)label('🔒',x+8,y-52,29);
+ ctx.restore();
+}
+function tower(x,y,lv){
+ ctx.save();const t=performance.now()/1000;
+ oval(x+3,y+39,55,20,'#587449');
+ if(!lv){
+  // Preview silhouette of unbuilt lookout.
+  ctx.globalAlpha=.62;
+  poly([[x-34,y+28],[x+30,y+23],[x+30,y-44],[x-34,y-39]],'#7b6650','#504637',3);
+  poly([[x-47,y-43],[x,y-94],[x+47,y-45],[x,y-28]],'#76563c','#42372b',4);
+  ctx.globalAlpha=1;label('🔒',x,y-28,30);ctx.restore();return;
+ }
+ // Sturdy posts, braces and observation deck.
+ for(const dx of [-33,27]){
+  poly([[x+dx-6,y+33],[x+dx+5,y+33],[x+dx+5,y-86],[x+dx-6,y-86]],'#805437','#4b3424',2);
+ }
+ v24Beam(x-30,y+4,x+30,y-57,5,'#c69557');v24Beam(x+27,y+12,x-31,y-57,4,'#604128');
+ poly([[x-48,y-83],[x+43,y-83],[x+43,y-57],[x-48,y-57]],'#aa7647','#523c2d',4);
+ for(let i=-1;i<=1;i++)poly([[x+i*29-8,y-88],[x+i*29+5,y-88],[x+i*29+5,y-107],[x+i*29-8,y-107]],'#c38a50','#5f4128',2);
+ poly([[x-63,y-103],[x,y-163],[x+60,y-103],[x,y-85]],'#915a36','#543a28',4);
+ for(let i=0;i<4;i++)v24Beam(x-27+i*14,y-119-i*5,x+4+i*12,y-116+i*3,2,'#d2a06a');
+ v24Beam(x+7,y-157,x+7,y-196,3,'#53382a');
+ const wave=Math.sin(t*2.2)*6;
+ poly([[x+8,y-194],[x+49+wave,y-183],[x+8,y-174]],'#b64239','#e9c27b',2);
+ label('👁️',x-3,y-72,24);
+ ctx.restore();
+}
+function hero(x,y){
+ const moving=Boolean(heroTarget);const stride=moving?Math.sin(walkPhase)*8:0;const bounce=moving?Math.abs(Math.sin(walkPhase))*3:0;y-=bounce;
+ ctx.save();oval(x,y+49,33,12,'#385d3e');
+ // Boots and blue sharovary
+ poly([[x-16,y+8],[x+14,y+8],[x+18,y+43],[x+4,y+47],[x-3,y+27],[x-11,y+46],[x-26,y+40]],'#2b5c9b','#1c3859',3);
+ poly([[x-27-stride,y+39],[x-8-stride,y+44],[x-8-stride,y+52],[x-29-stride,y+48]],'#503b2c');poly([[x+5+stride,y+43],[x+21+stride,y+40],[x+27+stride,y+49],[x+5+stride,y+53]],'#493529');
+ // Cloak and embroidered tunic
+ poly([[x-17,y-17],[x-33,y-2],[x-24,y+34],[x-10,y+26]],'#634a39','#372f28',2);
+ poly([[x-17,y-11],[x+15,y-11],[x+20,y+23],[x-22,y+23]],'#e9dbc0','#745d46',2);
+ for(let i=0;i<4;i++){v24Beam(x-4+i*3,y-8,x-4+i*3,y+10,1.6,'#a53e35')}
+ poly([[x-23,y+13],[x+20,y+12],[x+21,y+22],[x-21,y+23]],'#a73e31','#e2ab71',2);
+ // Arms and sabre
+ poly([[x-18,y-8],[x-27,y-3],[x-31+stride*.35,y+18],[x-24+stride*.35,y+22],[x-12,y+3]],'#e5c7a0','#5b4732',2);
+ poly([[x+14,y-9],[x+24,y-1],[x+30-stride*.35,y+17],[x+23-stride*.35,y+24],[x+12,y+5]],'#e5c7a0','#694e38',2);
+ v24Beam(x+26,y+18,x+46,y+35,4,'#b68b53');v24Beam(x+44,y+33,x+55,y+15,4,'#dce6db');
+ // Distinct head, hair, mustache and forelock
+ oval(x,y-31,22,25,'#dca472');oval(x-7,y-32,2.2,2.5,'#292924');oval(x+7,y-32,2.2,2.5,'#292924');
+ poly([[x-12,y-22],[x-4,y-25],[x,y-20],[x+5,y-25],[x+13,y-23],[x+5,y-14],[x,y-17],[x-7,y-14]],'#493126');
+ poly([[x-15,y-48],[x-6,y-58],[x+14,y-53],[x+17,y-45],[x-6,y-47]],'#4a3025');
+ poly([[x-3,y-52],[x-1,y-70],[x+9,y-77],[x+17,y-69],[x+13,y-63],[x+7,y-68],[x+6,y-52]],'#3d2b22');
+ ctx.restore()
+}
+function stableDrawing(x,y,lv){
+ ctx.save();const t=performance.now()/1000;
+ oval(x+4,y+50,89,20,'#4f7149');
+ // Stable always has a readable footprint, even while locked.
+ poly([[x-74,y-10],[x+67,y-10],[x+64,y+41],[x-70,y+41]],'#b18151','#503d2e',4);
+ poly([[x-86,y-17],[x-13,y-91],[x+82,y-15],[x+5,y-32]],'#865332','#50382b',4);
+ for(let i=0;i<5;i++)v24Beam(x-64+i*27,y-18,x-17+i*23,y-60,2,'#c3965e');
+ for(let i=0;i<4;i++)v24Beam(x-62+i*36,y+7,x-62+i*36,y+36,3,'#704b31');
+ poly([[x-26,y+7],[x+26,y+7],[x+26,y+41],[x-26,y+41]],'#352c27','#d4ad71',3);
+ // Hay, trough and horse emblem.
+ oval(x+66,y+42,27,10,'#b58a45');
+ label('🐎',x+1,y+27,35);
+ if(!lv){ctx.globalAlpha=.78;label('🔒',x+3,y-95,27);ctx.globalAlpha=1;}
+ else{
+  let sway=Math.sin(t*1.5)*3;
+  v24Beam(x+69,y-24,x+69,y-59,2.5,'#705034');
+  poly([[x+70,y-59],[x+98+sway,y-52],[x+70,y-43]],'#d6ab5d','#f4d899',1);
+  label('СТАЙНЯ '+lv,x,y-105,17,'#fff0c0');
+ }
+ ctx.restore();
+}
+// v2.7: pedestrians move on a shared navigation grid; buildings are not walkable.
+const NAV_STEP=20,NAV_W=40,NAV_H=40;
+const obstacles=[
+ [310,205,500,405],   // Kurin
+ [480,292,655,493],   // forge
+ [132,207,312,389],   // stable
+ [151,374,306,495],   // farm
+ [561,112,685,317],   // tower
+];
+const patrolStops=[[400,653],[400,545],[400,430],[327,520],[112,415],[112,324],[470,545],[686,482],[710,275]];
+const patrolmen=[];
+function navWalkable(x,y){
+ if(x<78||x>718||y<175||y>678)return false;
+ for(const [x1,y1,x2,y2] of obstacles)if(x>=x1-9&&x<=x2+9&&y>=y1-9&&y<=y2+9)return false;
+ return true;
+}
+function navCell(x,y){return [Math.max(0,Math.min(NAV_W-1,Math.round(x/NAV_STEP))),Math.max(0,Math.min(NAV_H-1,Math.round(y/NAV_STEP)))]}
+function nearestCell(x,y){const [sx,sy]=navCell(x,y);let best=null,dist=Infinity;for(let j=0;j<NAV_H;j++)for(let i=0;i<NAV_W;i++)if(navWalkable(i*NAV_STEP,j*NAV_STEP)){let d=(i-sx)**2+(j-sy)**2;if(d<dist){dist=d;best=[i,j]}}return best}
+function route(start,end){const a=nearestCell(start.x,start.y),b=nearestCell(end.x,end.y);if(!a||!b)return [];
+ const key=(x,y)=>y*NAV_W+x,goal=key(...b),startKey=key(...a),open=[startKey],prev=new Map(),cost=new Map([[startKey,0]]),closed=new Set();
+ while(open.length){let bi=0,bs=Infinity;for(let i=0;i<open.length;i++){const n=open[i],nx=n%NAV_W,ny=Math.floor(n/NAV_W),s=cost.get(n)+Math.abs(nx-b[0])+Math.abs(ny-b[1]);if(s<bs){bs=s;bi=i}}const n=open.splice(bi,1)[0];if(n===goal){let points=[];for(let c=n;c!==startKey;c=prev.get(c)){points.push({x:(c%NAV_W)*NAV_STEP,y:Math.floor(c/NAV_W)*NAV_STEP});if(!prev.has(c))break}return points.reverse()}
+ if(closed.has(n))continue;closed.add(n);const x=n%NAV_W,y=Math.floor(n/NAV_W);
+ for(const [dx,dy] of [[1,0],[-1,0],[0,1],[0,-1]]){const xx=x+dx,yy=y+dy;if(xx<0||yy<0||xx>=NAV_W||yy>=NAV_H||!navWalkable(xx*NAV_STEP,yy*NAV_STEP))continue;const v=key(xx,yy),c=cost.get(n)+1;if(c<(cost.get(v)??Infinity)){cost.set(v,c);prev.set(v,n);if(!closed.has(v)&&!open.includes(v))open.push(v)}}
+ }return [];
+}
+let heroRoute=[];
+function walkPath(agent,dt,speed){if(!agent.route||!agent.route.length)return false;const target=agent.route[0],dx=target.x-agent.x,dy=target.y-agent.y,d=Math.hypot(dx,dy),step=speed*dt;if(d<=step+0.7){agent.x=target.x;agent.y=target.y;agent.route.shift()}else{agent.x+=dx/d*step;agent.y+=dy/d*step}return true}
+function assignPatrol(person,i){for(let attempt=0;attempt<patrolStops.length;attempt++){const idx=(person.nextStop+i*3+attempt)%patrolStops.length,pt=patrolStops[idx],r=roadPath(person, {x:pt[0],y:pt[1]});if(r.length){person.route=r;person.nextStop=idx+1;return}}person.pause=1.2}
+function updatePatrols(dt){const count=Math.min(12,state.army.recruits);
+ while(patrolmen.length<count){const i=patrolmen.length;const pt=patrolStops[(i*3)%patrolStops.length];patrolmen.push({x:pt[0],y:pt[1],route:[],pause:.4+i*.32,nextStop:i,phase:i,walking:false})}
+ patrolmen.length=count;
+ for(let i=0;i<count;i++){const p=patrolmen[i];if(p.pause>0){p.pause-=dt;p.walking=false;continue}if(!p.route.length){p.pause=.4+(i%3)*.25;assignPatrol(p,i);continue}p.walking=walkPath(p,dt,42+i%3*5);p.phase+=dt*11;if(!p.route.length)p.pause=.7+i%3*.25}
+}
+function miniKozak(x,y,phase,walking,i){const stride=walking?Math.sin(phase)*4:0;ctx.save();oval(x,y+13,14,5,'#3a6042');
+ // same visual language as the otaman: blue trousers, embroidered tunic, sash, forelock
+ poly([[x-8,y+2],[x+8,y+2],[x+9+stride,y+11],[x+1+stride,y+12],[x-2-stride,y+10],[x-9-stride,y+12]],'#315b94','#233c65',1);
+ poly([[x-9,y-15],[x+9,y-15],[x+10,y+2],[x-10,y+2]],'#e8dcc1','#745a45',1);
+ ctx.strokeStyle='#a43e38';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(x-2,y-13);ctx.lineTo(x-2,y-3);ctx.moveTo(x+2,y-13);ctx.lineTo(x+2,y-3);ctx.stroke();
+ ctx.fillStyle='#a03d30';ctx.fillRect(x-10,y-1,20,4);oval(x,y-22,11,12,'#dca778');oval(x-4,y-23,1.3,1.3,'#282923');oval(x+4,y-23,1.3,1.3,'#282923');
+ poly([[x-7,y-18],[x,y-20],[x+7,y-18],[x,y-14]],'#4b3126');poly([[x-7,y-33],[x+3,y-37],[x+10,y-30],[x-4,y-31]],'#453025');poly([[x-2,y-34],[x,y-45],[x+7,y-44],[x+5,y-38]],'#453025');
+ ctx.strokeStyle='#d7e1d7';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(x+11,y-2);ctx.lineTo(x+17,y-16);ctx.stroke();ctx.restore()}
+function drawVillagers(){for(let i=0;i<patrolmen.length;i++){const p=patrolmen[i];miniKozak(p.x,p.y,p.phase,p.walking,i)}}
+// v2.3 decorative canvas layers; no saved-state fields or hitboxes changed.
+function v23Fence(){
+ const pts=[[50,216],[280,118],[496,90],[758,173],[737,604],[550,716],[218,704],[67,534]];
+ ctx.save();ctx.lineJoin='round';ctx.lineCap='round';
+ for(let i=0;i<pts.length;i++){
+  const a=pts[i],b=pts[(i+1)%pts.length],dx=b[0]-a[0],dy=b[1]-a[1],n=Math.max(1,Math.floor(Math.hypot(dx,dy)/20));
+  for(let k=0;k<=n;k++){
+   const t=k/n,x=a[0]+dx*t,y=a[1]+dy*t;
+   ctx.beginPath();ctx.moveTo(x-5,y+5);ctx.lineTo(x-5,y-13);ctx.lineTo(x,y-22);ctx.lineTo(x+5,y-13);ctx.lineTo(x+5,y+5);ctx.closePath();ctx.fillStyle=k%3?'#78543a':'#916742';ctx.fill();ctx.lineWidth=1;ctx.strokeStyle='#4a3929';ctx.stroke();
+  }
+ }
+ // Main gate and guard pennant
+ ctx.fillStyle='#503d2c';ctx.fillRect(331,686,125,14);
+ for(let x of [334,455]){ctx.fillStyle='#865d3b';ctx.fillRect(x,656,13,49);ctx.fillStyle='#d1a66b';ctx.fillRect(x-4,651,21,7)}
+ ctx.fillStyle='#ad603b';ctx.beginPath();ctx.moveTo(346,654);ctx.lineTo(396,623);ctx.lineTo(465,654);ctx.closePath();ctx.fill();
+ ctx.restore();
+}
+// v2.8: one shared road graph for visuals, otaman and patrols.
+// Roads stay clear of the building collision boxes, with a single branch per entrance.
+const ROAD_POINTS={
+ gate:[400,653],square:[400,545],kurin:[400,430],
+ west:[340,545],westLower:[112,545],westTurn:[112,415],stable:[112,324],
+ farm:[327,520], east:[470,545],eastEdge:[686,545],forge:[686,482],
+ towerTurn:[710,345],tower:[710,275]
+};
+const ROAD_EDGES=[
+ ['gate','square'],['square','kurin'],['square','west'],
+ ['west','farm'],['west','westLower'],['westLower','westTurn'],['westTurn','stable'],
+ ['square','east'],['east','eastEdge'],['eastEdge','forge'],
+ ['forge','towerTurn'],['towerTurn','tower']
+];
+const ROAD_GRAPH={};for(const name of Object.keys(ROAD_POINTS))ROAD_GRAPH[name]=[];
+for(const [a,b] of ROAD_EDGES){ROAD_GRAPH[a].push(b);ROAD_GRAPH[b].push(a)}
+function v23Paths(){
+ ctx.save();ctx.lineCap='round';ctx.lineJoin='round';
+ for(const [a,b] of ROAD_EDGES){const [x,y]=ROAD_POINTS[a], [xx,yy]=ROAD_POINTS[b];
+  ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(xx,yy);
+  ctx.strokeStyle='#98794f';ctx.lineWidth=29;ctx.stroke();
+  ctx.strokeStyle='#d2b580';ctx.lineWidth=22;ctx.stroke();
+  ctx.strokeStyle='rgba(248,223,171,.32)';ctx.lineWidth=2;ctx.stroke();
+ }
+ for(const [x,y] of Object.values(ROAD_POINTS)){oval(x,y,11,11,'#d2b580')}
+ ctx.restore();
+}
+// Project a character's current position onto a road segment to find their entry point.
+function roadProjection(x,y){let best=null,dd=Infinity;
+ for(const [a,b] of ROAD_EDGES){let [ax,ay]=ROAD_POINTS[a],[bx,by]=ROAD_POINTS[b];
+ const t=Math.max(0,Math.min(1,((x-ax)*(bx-ax)+(y-ay)*(by-ay))/((bx-ax)**2+(by-ay)**2)));
+ const px=ax+(bx-ax)*t,py=ay+(by-ay)*t,d=(x-px)**2+(y-py)**2;
+ if(d<dd){dd=d;best={a,b,x:px,y:py,t}}}
+ return best;
+}
+function roadPath(from,to){const st=roadProjection(from.x,from.y),dest=roadProjection(to.x,to.y);
+ if(!st||!dest)return [];
+ const adj={};for(const [a,list] of Object.entries(ROAD_GRAPH))adj[a]=list.map(b=>({n:b,w:Math.hypot(ROAD_POINTS[b][0]-ROAD_POINTS[a][0],ROAD_POINTS[b][1]-ROAD_POINTS[a][1])}));
+ // temporary source and target nodes connect to the endpoints of their road segments
+ adj.S=[{n:st.a,w:Math.hypot(st.x-ROAD_POINTS[st.a][0],st.y-ROAD_POINTS[st.a][1])},{n:st.b,w:Math.hypot(st.x-ROAD_POINTS[st.b][0],st.y-ROAD_POINTS[st.b][1])}];
+ adj.T=[];
+ for(const edge of adj.S)adj[edge.n].push({n:'S',w:edge.w});
+ for(const name of [dest.a,dest.b]){const w=Math.hypot(dest.x-ROAD_POINTS[name][0],dest.y-ROAD_POINTS[name][1]);adj[name].push({n:'T',w});adj.T.push({n:name,w})}
+ if(st.a===dest.a&&st.b===dest.b){adj.S.push({n:'T',w:Math.hypot(st.x-dest.x,st.y-dest.y)})}
+ const dist={S:0},prev={},seen=new Set();
+ while(true){let u=null,min=Infinity;for(const [k,v] of Object.entries(dist))if(!seen.has(k)&&v<min){min=v;u=k}if(u===null||u==='T')break;seen.add(u);
+ for(const {n,w} of adj[u])if(min+w<(dist[n]??Infinity)){dist[n]=min+w;prev[n]=u}}
+ if(!Number.isFinite(dist.T))return [];
+ const names=[];for(let n='T';n&&n!=='S';n=prev[n])names.unshift(n);
+ const points=[{x:st.x,y:st.y}];for(const n of names){if(n==='T')points.push({x:dest.x,y:dest.y});else points.push({x:ROAD_POINTS[n][0],y:ROAD_POINTS[n][1]})}
+ return points.filter((v,i,a)=>i===0||Math.hypot(v.x-a[i-1].x,v.y-a[i-1].y)>.5);
+}
+function v23Details(){
+ ctx.save();
+ // Woodpile near forge
+ for(let i=0;i<5;i++){const x=637+i*13,y=464+(i%2)*5;oval(x,y,8,7,'#865e3b');oval(x,y,4,4,'#c49a65')}
+ // Barrels and supply bags beside main road
+ for(const [x,y] of [[494,556],[517,550],[555,564]]){oval(x,y+10,17,6,'#4b623e');poly([[x-11,y-15],[x+11,y-15],[x+13,y+10],[x-13,y+10]],'#91643c','#523e2b',2);ctx.fillStyle='#c89d66';ctx.fillRect(x-11,y-6,22,4)}
+ // Grass, daisies and stones in non-interactive areas
+ for(let i=0;i<42;i++){let x=(i*173+93)%740+24,y=(i*107+39)%625+85;if(Math.hypot(x-394,y-360)<145||Math.hypot(x-225,y-325)<85||Math.hypot(x-560,y-420)<95)continue;ctx.strokeStyle=i%3?'#476e3f':'#b7bb66';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x-4,y-8);ctx.moveTo(x,y);ctx.lineTo(x+4,y-11);ctx.stroke();if(i%5===0){oval(x,y-12,3,3,'#f0dcab');oval(x,y-12,1.3,1.3,'#dfa65c')}}
+ // Banner on the square
+ ctx.strokeStyle='#49392d';ctx.lineWidth=6;ctx.beginPath();ctx.moveTo(477,346);ctx.lineTo(477,275);ctx.stroke();poly([[479,275],[522+Math.sin(performance.now()/420)*7,285],[479,297]],'#b84c3f','#e2b16f',2);label('⚔',499,292,15);
+ // Warm highlights on central building and forge without obscuring clicks
+ ctx.globalAlpha=.28;poly([[306,306],[393,222],[490,306],[393,338]],'#f5ca7d',null);ctx.globalAlpha=1;
+ ctx.restore();
+}
+function draw(){ctx.clearRect(0,0,800,800);let grad=ctx.createLinearGradient(0,0,800,800);grad.addColorStop(0,'#8bad64');grad.addColorStop(1,'#537d59');ctx.fillStyle=grad;ctx.fillRect(0,0,800,800);for(let j=0;j<13;j++)for(let i=0;i<14;i++){let x=i*66+(j%2)*23,y=j*66;oval(x,y,24,10,(i+j)%3===0?'#8daf68':'#7da562')};poly([[0,610],[80,565],[80,645],[0,705]],'#d4ba7e','#c6a26e',2);poly([[50,216],[280,118],[496,90],[758,173],[737,604],[550,716],[218,704],[67,534]],'#86a85f','#b2a86c',5);v23Paths();v23Fence();for(let p of [[80,205],[147,157],[250,117],[710,165],[731,575],[650,645],[140,640],[65,490],[85,370]])tree(p[0],p[1],p[1]<200?.8:1.1);if(state.land>=1){for(let p of [[34,108],[90,80],[156,65],[230,54],[296,42]])tree(p[0],p[1],.85);label('🌲 ПІВНІЧНИЙ ГАЙ',170,40,15,'#fff0ba')}else{label('🔒 ГАЙ',134,70,22)}if(state.land>=2){poly([[700,415],[800,381],[800,800],[641,800],[653,665]],'#5197bb','#2b698a',4);for(let i=0;i<5;i++)oval(740,480+i*62,45,6,'#9acdd3');label('⛵',727,589,46);label('ДНІПРО',727,620,18)}else{label('🔒 БЕРЕГ',694,777,18)}for(let p of [[108,292],[685,337],[125,576],[530,666]]){oval(p[0],p[1],24,12,'#b89c71');oval(p[0],p[1]-4,8,3,'#ddd0a2')};farm(224,452,state.buildings.farm);stableDrawing(225,320,state.buildings.stable);forge(570,414,state.buildings.forge);hut(393,310,state.buildings.hut,1);tower(620,249,state.buildings.tower);v23Details();drawVillagers();hero(state.hero.x,state.hero.y);if(state.army.recruits>0)label('🛡️ '+state.army.recruits+' КОЗАКІВ',395,220,19);else label('🛡️',392,219,24);label('⚔️',715,689,37);label('БІЙ',715,724,17);label(state.name,387,632,20,'#fff2c2');let d=defs.find(d=>d.id===selected);ctx.strokeStyle='#f8d57a';ctx.lineWidth=6;ctx.setLineDash([9,9]);ctx.beginPath();ctx.ellipse(d.x,d.y+36,89,41,0,0,Math.PI*2);ctx.stroke();ctx.setLineDash([]);label(d.emoji+' '+d.title,d.x,d.y-125,22,'#ffe1a5')}
+canvas.addEventListener('click',e=>{let r=canvas.getBoundingClientRect(),x=(e.clientX-r.left)*800/r.width,y=(e.clientY-r.top)*800/r.height;let d=defs.map(d=>({...d,dist:Math.hypot(x-d.x,y-d.y)})).sort((a,b)=>a.dist-b.dist)[0];if(x>660&&y>640){tab='battle';render();$('hint').textContent='⚔️ Похід готовий!';}else if(d.dist<116)choose(d.id);else{const destination={x:Math.max(80,Math.min(718,x)),y:Math.max(175,Math.min(678,y))};heroRoute=roadPath(state.hero,destination);heroTarget=heroRoute.length?heroRoute[heroRoute.length-1]:null;$('hint').textContent=heroRoute.length?'🏃 Отаман обходить будівлі дорогою':'⛔ Тут немає проходу';}});document.querySelectorAll('[data-tab]').forEach(b=>b.addEventListener('click',()=>{tab=b.dataset.tab;render()}));window.addEventListener('focus',()=>{passive();if(state.daily.date!==today()){state.daily={date:today(),upgrade:0,earn:0,explore:0,viewed:[],claimed:[]};update()}});setInterval(()=>{passive();if(tab==='battle')render();updateHeaderOnly()},30000);function updateHeaderOnly(){paintHealth();$('wood').textContent=state.wood;$('food').textContent=state.food}if(!navWalkable(state.hero.x,state.hero.y)){const entry=roadProjection(state.hero.x,state.hero.y);if(entry){state.hero.x=entry.x;state.hero.y=entry.y}}update();function animate(ts){let dt=Math.min((ts-lastFrame||16)/1000,.05);lastFrame=ts;if(heroRoute.length){const agent={x:state.hero.x,y:state.hero.y,route:heroRoute};walkPath(agent,dt,135);state.hero.x=agent.x;state.hero.y=agent.y;if(heroRoute.length)walkPhase+=dt*16;else{heroTarget=null;state.steps++;if(state.steps%3===0){state.xp+=5;show('🚶 Дослідження Січі: +5 досвіду');update()}else safe()}}else{heroTarget=null}updatePatrols(dt);draw();requestAnimationFrame(animate)}requestAnimationFrame(animate);})();
+</script><script>
+(function(){
+  const intro=document.getElementById('sichLaunch'), play=document.getElementById('sichPlay'), menu=document.getElementById('sichMenu');
+  function showGame(){intro.classList.add('closed');intro.setAttribute('aria-hidden','true');menu.classList.remove('hide');try{window.Telegram?.WebApp?.HapticFeedback?.impactOccurred('light')}catch(e){};}
+  play.addEventListener('click',showGame);
+  menu.addEventListener('click',()=>{intro.classList.remove('closed');intro.removeAttribute('aria-hidden');menu.classList.add('hide');play.focus()});
+  document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!intro.classList.contains('closed'))showGame()});
+})();
+</script><style>
+#otamanPanel{margin:18px 0;padding:17px;border:1px solid #c4a363;border-radius:17px;background:linear-gradient(145deg,#254637,#102a22);color:#ffe3ac}
+#otamanPanel h2{margin:0 0 10px;font-size:20px;color:#ffdb8f}
+#otamanPanel .otgrid{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+#otamanPanel .otcard{padding:11px;border:1px solid #69805d;border-radius:12px;background:#17382f}
+#otamanPanel .otmuted{font-size:12px;color:#d7d4bc;line-height:1.6}
+#otamanPanel select{background:#294d38;color:#ffe8bb;border:1px solid #a98a50;padding:10px;border-radius:8px;width:100%;font:inherit}
+#otamanPanel .otlabel{font-size:12px;margin:12px 0 5px;display:block}
+#otamanPanel .otnote{margin-top:12px;padding:10px;border-left:3px solid #f1c776;background:#09231e;color:#f2dec0;font-size:12px;line-height:1.55}
+@media(max-width:390px){#otamanPanel .otgrid{grid-template-columns:1fr}}
+</style>
+<script>
+(()=>{
+ 'use strict';
+ const cloud=document.querySelector('.cloudtest');
+ if(!cloud)return;
+ const panel=document.createElement('section');
+ panel.id='otamanPanel';
+ panel.innerHTML=`<h2>🏅 Реєстр отаманів · ТЕСТ</h2>
+ <p class="otmuted">Твій профіль у Telegram. Місто — добровільний вибір для майбутніх змагань.</p>
+ <div class="otgrid"><div class="otcard"><div class="otmuted">⚔️ Отаман</div><strong id="otamanName">Гість Січі</strong></div>
+ <div class="otcard"><div class="otmuted">🛡️ Telegram</div><strong id="otamanAuth">Тестовий режим</strong></div></div>
+ <label class="otlabel" for="otamanCity">🏙️ Твоє місто</label>
+ <select id="otamanCity"><option value="">Обери місто</option><option>Київ</option><option>Львів</option><option>Харків</option><option>Одеса</option><option>Дніпро</option><option>Запоріжжя</option><option>Миколаїв</option><option>Вінниця</option><option>Полтава</option><option>Чернігів</option><option>Суми</option><option>Черкаси</option><option>Житомир</option><option>Рівне</option><option>Луцьк</option><option>Тернопіль</option><option>Івано-Франківськ</option><option>Ужгород</option><option>Чернівці</option><option>Хмельницький</option><option>Кропивницький</option><option>Херсон</option><option>Донецьк</option><option>Луганськ</option><option>Сімферополь</option><option value="Інше місто">Інше місто</option></select>
+ <p class="otmuted" id="otamanCityStatus">Перевіряємо профіль…</p><button type="button" id="otamanSaveCity" disabled style="background:#c79d56;color:#172b22;padding:11px 14px;border:0;border-radius:8px;font-weight:800;cursor:pointer">☁️ Зберегти місто в хмарі</button>
+ <div class="otnote"><strong>🏆 Рейтинг отаманів — незабаром</strong><div>Місця та бали ще не публікуються. Випадкових суперників або вигаданих результатів тут немає. Для чесного рейтингу потрібна серверна перевірка досягнень.</div></div>`;
+ cloud.parentNode.insertBefore(panel,cloud);
+ const tg=window.Telegram?.WebApp;
+ const user=(tg?.initData&&tg?.initDataUnsafe?.user)||null;
+ if(user){document.getElementById('otamanName').textContent=[user.first_name,user.last_name].filter(Boolean).join(' ')||'Отаман';document.getElementById('otamanAuth').textContent='У Telegram';}
+ const city=document.getElementById('otamanCity');
+ const saved=localStorage.getItem('sich_v14_city')||'';
+ if([...city.options].some(o=>o.value===saved))city.value=saved;
+ const status=document.getElementById('otamanCityStatus');
+ const saveBtn=document.getElementById('otamanSaveCity');
+ const endpoint='https://ghjgwmfqtkmkhpqodetj.supabase.co/functions/v1/sich-profile';
+ const initData=tg?.initData||'';
+ let profileReady=false, busy=false;
+ const valid=v=>[...city.options].some(o=>o.value===v&&v!=='');
+ const setStatus=msg=>{status.textContent=msg;};
+ async function api(action, extra={}){
+   const ctrl=new AbortController();
+   const timer=setTimeout(()=>ctrl.abort(),12000);
+   try{
+    const res=await fetch(endpoint,{
+     method:'POST',headers:{'Content-Type':'application/json'},
+     body:JSON.stringify({action,initData,...extra}),signal:ctrl.signal
+    });
+    const data=await res.json().catch(()=>({}));
+    if(!res.ok||!data.ok)throw Error(data.error||'HTTP '+res.status);
+    return data.profile;
+   }finally{clearTimeout(timer);}
+ }
+ function localChanged(){
+  localStorage.setItem('sich_v14_city',city.value);
+  saveBtn.disabled=!profileReady||!valid(city.value)||busy;
+  setStatus(city.value?'Обрано: '+city.value+'. Натисни кнопку, щоб зберегти в хмарі.':'Обери місто для свого профілю.');
+ }
+ city.addEventListener('change',localChanged);
+ saveBtn.addEventListener('click',async()=>{
+   if(!profileReady||busy||!valid(city.value))return;
+   busy=true;saveBtn.disabled=true;setStatus('☁️ Зберігаємо місто…');
+   try{
+     const selected=city.value;
+     const profile=await api('set_city',{city:selected});
+     if(profile.city!==selected)throw Error('Місто не підтверджено сервером');
+     localStorage.setItem('sich_v14_city',selected);
+     setStatus('✅ '+selected+' збережено в Supabase. Твій профіль доступний з іншого пристрою.');
+   }catch(e){setStatus('⚠️ Не вдалося зберегти: '+e.message);}
+   finally{busy=false;saveBtn.disabled=!valid(city.value);}
+ });
+ if(!initData){
+   setStatus('Браузерний режим: вхід до реєстру лише через Telegram. Вибір міста локальний.');
+ }else{
+   setStatus('⏳ Перевіряємо Telegram-профіль у Supabase…');
+   api('get').then(profile=>{
+     profileReady=true;
+     document.getElementById('otamanName').textContent=profile.display_name||'Отаман';
+     document.getElementById('otamanAuth').textContent='✅ Профіль у реєстрі';
+     if(profile.city&&valid(profile.city)){
+       city.value=profile.city;
+       localStorage.setItem('sich_v14_city',profile.city);
+       setStatus('✅ Місто '+profile.city+' завантажене з Supabase.');
+     }else{
+       setStatus(city.value?'Локально обрано '+city.value+'. Натисни «Зберегти місто в хмарі».':'Профіль створено. Обери своє місто.');
+     }
+     saveBtn.disabled=!valid(city.value);
+   }).catch(e=>{
+     document.getElementById('otamanAuth').textContent='⚠️ Хмара недоступна';
+     setStatus('⚠️ Профіль не завантажено: '+e.message+'. Збереження міста вимкнено.');
+   });
+ }
+
+})();
+</script><style>
+#sichCityRanking{margin-top:14px;padding:13px;border-radius:12px;background:#09231e;border:1px solid #7c7050;color:#f2dec0}
+#sichCityRanking h3{margin:0 0 8px;color:#ffda8b;font-size:17px}
+#sichCityRanking .rankitem{display:flex;gap:9px;align-items:center;justify-content:space-between;padding:10px 4px;border-bottom:1px solid #365042}
+#sichCityRanking .rankitem:last-child{border-bottom:0}
+#sichCityRanking .rankmeta{font-size:12px;color:#d2c9ac;line-height:1.6;margin:7px 0}
+#sichCityRanking button{border:1px solid #a88b51;background:#254638;color:#ffe2a1;border-radius:9px;padding:8px 12px;font-weight:700;cursor:pointer}
+</style>
+<script>
+(()=>{
+ 'use strict';
+ const panel=document.getElementById('otamanPanel');
+ if(!panel)return;
+ const placeholder=panel.querySelector('.otnote');
+ if(placeholder)placeholder.remove();
+ const box=document.createElement('section');
+ box.id='sichCityRanking';
+ box.innerHTML='<h3>🏆 Рейтинг міст України · LIVE</h3><div class="rankmeta" id="cityRankSummary">Завантажуємо справжній рейтинг зареєстрованих гравців…</div><div id="cityRankResults"></div><button type="button" id="cityRankRefresh">↻ Оновити рейтинг</button><div class="rankmeta">Позиція визначається кількістю зареєстрованих отаманів, а не бойовими балами. Рейтинг гравців за досягненнями — у майбутньому.</div>';
+ panel.appendChild(box);
+ const summary=document.getElementById('cityRankSummary');
+ const results=document.getElementById('cityRankResults');
+ const refresh=document.getElementById('cityRankRefresh');
+ let busy=false;
+ const endpoint='https://ghjgwmfqtkmkhpqodetj.supabase.co/functions/v1/sich-ranking';
+ async function load(){
+  if(busy)return;
+  busy=true;refresh.disabled=true;summary.textContent='⏳ Завантажуємо рейтинг…';
+  const ctrl=new AbortController();const timer=setTimeout(()=>ctrl.abort(),12000);
+  try{
+   const resp=await fetch(endpoint,{method:'GET',signal:ctrl.signal,cache:'no-store'});
+   const data=await resp.json();
+   if(!resp.ok||data.ok!==true||!Array.isArray(data.top_cities))throw Error(data.error||'HTTP '+resp.status);
+   results.replaceChildren();
+   const players=Number(data.total_players)||0,cities=Number(data.total_cities)||0;
+   summary.textContent='👥 Отаманів: '+players+' · 🏙️ Міст: '+cities+' · Дані з Supabase';
+   if(!data.top_cities.length){results.textContent='Поки що зареєстрованих гравців немає.';return;}
+   data.top_cities.forEach((item,i)=>{
+    const city=typeof item.city==='string'?item.city:'Без міста';
+    const count=Number(item.otamans)||0;
+    const line=document.createElement('div');line.className='rankitem';
+    const left=document.createElement('span');left.textContent=(i===0?'🥇':i===1?'🥈':i===2?'🥉':String(i+1)+'.')+' '+city;
+    const right=document.createElement('strong');right.textContent=count+' '+(count===1?'отаман':'отаманів');
+    line.append(left,right);results.append(line);
+   });
+  }catch(e){summary.textContent='⚠️ Рейтинг не завантажено. Перевір інтернет і спробуй ще раз.';results.replaceChildren();}
+  finally{clearTimeout(timer);busy=false;refresh.disabled=false;}
+ }
+ refresh.addEventListener('click',load);load();
+})();
+</script>
+</body></html>
