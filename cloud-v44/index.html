@@ -87,6 +87,11 @@ try{
 const KEY='kozak_online_v3';const defs=[{id:'hut',title:'Курінь',emoji:'🏠',desc:'Оселя козака. Покращуй, щоб зміцнювати Січ.',base:200,gain:0,x:398,y:312},{id:'forge',title:'Кузня',emoji:'⚒️',desc:'Виробляє 30 монет за збір.',base:250,gain:30,x:590,y:425},{id:'farm',title:'Господарство',emoji:'🌾',desc:'Виробляє 25 монет за збір.',base:180,gain:25,x:155,y:390},{id:'tower',title:'Вартова вежа',emoji:'🗼',desc:'Охороняє Січ. Додає престиж.',base:300,gain:0,x:632,y:211},{id:'stable',title:'Стайня',emoji:'🐎',desc:'Готує коней до походів: +3 бойової сили та +5 здоров’я за рівень.',base:320,gain:0,x:215,y:235}];let state;try{state=JSON.parse(localStorage.getItem(KEY))}catch(e){}if(!state||!state.buildings){let old;try{old=JSON.parse(localStorage.getItem('kozak_online_v2'))||JSON.parse(localStorage.getItem('kozak_online_v1'))}catch(e){}state=old&&old.buildings?old:{coins:500,xp:0,name:'Отаман',buildings:{hut:1,forge:0,farm:0,tower:0},lastCollect:0,claimed:{},created:Date.now()}}state.buildings.stable=Math.max(0,Math.min(20,Number(state.buildings.stable)||0));state.wood=Number.isFinite(state.wood)?state.wood:30;state.food=Number.isFinite(state.food)?state.food:20;state.lastWood=state.lastWood||0;state.lastFood=state.lastFood||0;state.steps=state.steps||0;state.passiveAt=state.passiveAt||Date.now();state.battles=state.battles||{wins:0,losses:0,last:0};state.lumber=state.lumber||0;state.hero=state.hero||{x:390,y:559};state.army=state.army||{recruits:0,training:0,stance:'balanced',enemy:'bandit'};state.army.recruits=Math.max(0,Number(state.army.recruits)||0);state.army.training=Math.max(0,Number(state.army.training)||0);
 const WEAPONS=[{id:'basic',name:'Звичайна шабля',price:0,bonus:0},{id:'cossack',name:'Козацька шабля',price:300,bonus:3},{id:'steel',name:'Сталевий меч',price:750,bonus:6},{id:'otaman',name:'Отаманська шабля',price:1500,bonus:10}];
 state.armory=state.armory&&typeof state.armory==='object'?state.armory:{owned:['basic'],hero:'basic',soldiers:{}};if(!Array.isArray(state.armory.owned))state.armory.owned=['basic'];if(!state.armory.owned.includes('basic'))state.armory.owned.push('basic');state.armory.owned=state.armory.owned.filter(id=>WEAPONS.some(w=>w.id===id));if(!state.armory.owned.includes(state.armory.hero))state.armory.hero='basic';if(!state.armory.soldiers||typeof state.armory.soldiers!=='object')state.armory.soldiers={};
+// A hired Cossack starts unarmed. Previously assigned 'basic' was never a bought soldier item.
+for(const k of Object.keys(state.armory.soldiers)){
+ const id=state.armory.soldiers[k];
+ if(id==='basic'||!state.armory.owned.includes(id))state.armory.soldiers[k]='none';
+}
 function weaponBonus(id){return (WEAPONS.find(w=>w.id===id)||WEAPONS[0]).bonus}
 function gearBonus(){let bonus=weaponBonus(state.armory.hero);for(let i=0;i<state.army.recruits;i++)bonus+=weaponBonus(state.armory.soldiers[i]);return bonus}
 const SHIELDS=[{id:'none',name:'Без щита',price:0,block:0},{id:'wood',name:'Дерев’яний щит',price:150,block:2},{id:'reinforced',name:'Укріплений щит',price:400,block:4},{id:'chief',name:'Отаманський щит',price:900,block:6}];
@@ -246,8 +251,9 @@ function el(tag,cls,text){let e=document.createElement(tag);if(cls)e.className=c
 function render(){paintHealth();let root=$('content');root.replaceChildren();document.querySelectorAll('[data-tab]').forEach(b=>b.classList.toggle('active',b.dataset.tab===tab));if(tab==='armory'){
  const card=el('div','card');card.append(el('div','name','⚒️ Козацька зброярня'),el('div','small','Озброюй отамана та найнятих козаків. Купівля за монети: одна зброя — одна одиниця інвентарю. Telegram Stars поки не підключені.'));root.append(card);
  const current=el('div','card');current.append(el('div','name','🗡️ Обрати зброю отаману'),el('div','small','Зараз: '+(WEAPONS.find(w=>w.id===state.armory.hero)||WEAPONS[0]).name+' · Додатковий урон за удар: +'+gearBonus()+' HP'));root.append(current);
- for(const w of WEAPONS){const c=el('div','card');c.append(el('div','name',w.name+' · +'+w.bonus+' ⚔️'),el('div','small',w.price?'Ціна: '+w.price+' 🪙':'Базова зброя · безкоштовно'));const r=el('div','row');r.style.marginTop='10px';if(!state.armory.owned.includes(w.id)){r.append(btn('Купити · '+w.price+' 🪙',()=>{if(state.coins<w.price)return show('Недостатньо монет');state.coins-=w.price;state.armory.owned.push(w.id);show('Куплено: '+w.name);update()},state.coins<w.price))}else{r.append(btn(state.armory.hero===w.id?'✓ Екіпіровано':'Дати отаману',()=>{for(const k of Object.keys(state.armory.soldiers)){if(state.armory.soldiers[k]===w.id)state.armory.soldiers[k]='basic'}state.armory.hero=w.id;update()},state.armory.hero===w.id));}c.append(r);root.append(c)}
- if(state.army.recruits){const soldiers=el('div','card');soldiers.append(el('div','name','🛡️ Зброя козаків'),el('div','small','Кожному воїну можна призначити куплений клинок. Для одного меча — один власник.'));for(let i=0;i<state.army.recruits;i++){const idx=i,row=el('div','card');row.append(el('div','name','Козак '+(i+1)));const sel=el('select');sel.style.cssText='padding:10px;background:#203c31;color:#fff0cf;border:1px solid #bba16a;border-radius:8px;max-width:100%';const allocated=new Set([state.armory.hero,...Object.entries(state.armory.soldiers).filter(([k])=>+k!==idx).map(([,v])=>v)]);for(const w of WEAPONS){if(w.id!=='basic'&&(!state.armory.owned.includes(w.id)||allocated.has(w.id)))continue;const op=el('option',null,w.name+' (+'+w.bonus+')');op.value=w.id;op.selected=(state.armory.soldiers[idx]||'basic')===w.id;sel.append(op)}sel.onchange=()=>{state.armory.soldiers[idx]=sel.value;update()};row.append(sel);soldiers.append(row)}root.append(soldiers)}
+ for(const w of WEAPONS){const c=el('div','card');c.append(el('div','name',w.name+' · +'+w.bonus+' ⚔️'),el('div','small',w.price?'Ціна: '+w.price+' 🪙':'Базова зброя · безкоштовно'));const r=el('div','row');r.style.marginTop='10px';if(!state.armory.owned.includes(w.id)){r.append(btn('Купити · '+w.price+' 🪙',()=>{if(state.coins<w.price)return show('Недостатньо монет');state.coins-=w.price;state.armory.owned.push(w.id);show('Куплено: '+w.name);update()},state.coins<w.price))}else{r.append(btn(state.armory.hero===w.id?'✓ Екіпіровано':'Дати отаману',()=>{for(const k of Object.keys(state.armory.soldiers)){if(state.armory.soldiers[k]===w.id)state.armory.soldiers[k]='none'}state.armory.hero=w.id;update()},state.armory.hero===w.id));}c.append(r);root.append(c)}
+ if(state.army.recruits){const soldiers=el('div','card');soldiers.append(el('div','name','🛡️ Зброя козаків'),el('div','small','Нові козаки без зброї. Клинок з’явиться лише після купівлі та призначення. Один меч — один власник.'));for(let i=0;i<state.army.recruits;i++){const idx=i,row=el('div','card');row.append(el('div','name','Козак '+(i+1)));const sel=el('select');sel.style.cssText='padding:10px;background:#203c31;color:#fff0cf;border:1px solid #bba16a;border-radius:8px;max-width:100%';const allocated=new Set([state.armory.hero,...Object.entries(state.armory.soldiers).filter(([k])=>+k!==idx).map(([,v])=>v)]);const empty=el('option',null,'Без зброї (+0)');empty.value='none';empty.selected=(!state.armory.soldiers[idx]||state.armory.soldiers[idx]==='none'||state.armory.soldiers[idx]==='basic');sel.append(empty);
+for(const w of WEAPONS){if(w.id==='basic'||!state.armory.owned.includes(w.id)||allocated.has(w.id))continue;const op=el('option',null,w.name+' (+'+w.bonus+')');op.value=w.id;op.selected=state.armory.soldiers[idx]===w.id;sel.append(op)}sel.onchange=()=>{state.armory.soldiers[idx]=sel.value;update()};row.append(sel);soldiers.append(row)}root.append(soldiers)}
  const shieldHeader=el('div','card');shieldHeader.append(el('div','name','🛡️ Щити Січі'),el('div','small','Щити зменшують шкоду від кожної відповіді ворога. Мінімальна шкода — 1 HP. Один куплений щит — один власник.'));
  shieldHeader.append(el('div','small','Зараз на отамані: '+(SHIELDS.find(z=>z.id===state.shields.hero)||SHIELDS[0]).name+' · Загальний захист загону: −'+totalShieldBlock()+' HP'));root.append(shieldHeader);
  for(const sh of SHIELDS){const c=el('div','card');c.append(el('div','name','🛡️ '+sh.name+' · −'+sh.block+' HP'),el('div','small',sh.price?'Ціна: '+sh.price+' 🪙':'Безкоштовний вибір'));const row=el('div','row');row.style.marginTop='10px';if(sh.id!=='none'&&!state.shields.owned.includes(sh.id)){row.append(btn('Купити · '+sh.price+' 🪙',()=>{if(state.coins<sh.price)return show('Недостатньо монет');state.coins-=sh.price;state.shields.owned.push(sh.id);show('Куплено: '+sh.name);update()},state.coins<sh.price))}else{row.append(btn(state.shields.hero===sh.id?'✓ Екіпіровано':'Дати отаману',()=>{for(const k of Object.keys(state.shields.soldiers)){if(state.shields.soldiers[k]===sh.id&&sh.id!=='none')state.shields.soldiers[k]='none'}state.shields.hero=sh.id;update()},state.shields.hero===sh.id))}c.append(row);root.append(c)}
@@ -426,7 +432,7 @@ function hero(x,y){
  // Gentle float and warm glow keep the leader easy to locate without obstructing play.
  {
    const t=performance.now()/1000;
-   const sx=x,sy=y-71+Math.cos(t*2.7)*1.5;
+   const sx=x,sy=y-56+Math.cos(t*2.7)*1.5;
    ctx.save();ctx.translate(sx,sy);
    ctx.shadowColor='#ffd77b';ctx.shadowBlur=13+3*Math.sin(t*2);
    ctx.globalAlpha=0.95;
@@ -577,7 +583,7 @@ function updatePatrols(dt){
    const row=Math.floor(i/cols),inRow=Math.min(cols,count-row*cols);
    const col=i%cols;
    const x=555+(col-(inRow-1)/2)*spacing;
-   const y=620+row*55;
+   const y=651+row*48;
    const p=patrolmen[i]||(patrolmen[i]={});
    p.x=x;p.y=y;p.walking=false;p.phase=i*.85+performance.now()/2100;
  }
@@ -585,12 +591,14 @@ function updatePatrols(dt){
 // A visual gathering ground in the southern yard, away from public roads.
 function drawDruzhynaYard(){
  const rows=Math.max(1,Math.ceil(Math.max(1,Math.min(30,state.army.recruits))/5));
- const bottom=Math.min(782,662+(rows-1)*55);
+ const bottom=Math.min(782,697+(rows-1)*48);
  ctx.save();
  ctx.fillStyle='rgba(77,87,53,.32)';ctx.strokeStyle='#b99b61';ctx.lineWidth=2;
- ctx.beginPath();ctx.roundRect(453,566,207,Math.max(98,bottom-566),14);ctx.fill();ctx.stroke();
+ ctx.beginPath();ctx.roundRect(453,566,207,Math.max(130,bottom-566),14);ctx.fill();ctx.stroke();
  ctx.fillStyle='#514b32';ctx.font='bold 13px sans-serif';ctx.textAlign='center';
- ctx.fillText('МАЙДАН ДРУЖИНИ',555,588);
+ ctx.fillStyle='rgba(24,50,35,.86)';ctx.beginPath();ctx.roundRect(496,571,118,24,7);ctx.fill();
+ ctx.fillStyle='#f2d89b';ctx.font='bold 11px sans-serif';ctx.textAlign='center';
+ ctx.fillText('МАЙДАН ДРУЖИНИ',555,587);
  ctx.restore();
 }
 function miniKozak(x,y,phase,walking,i){
@@ -608,7 +616,8 @@ function miniKozak(x,y,phase,walking,i){
  poly([[x-7,y-18],[x,y-20],[x+7,y-18],[x,y-14]],'#4b3126');poly([[x-7,y-33],[x+3,y-37],[x+10,y-30],[x-4,y-31]],'#453025');poly([[x-2,y-34],[x,y-45],[x+7,y-44],[x+5,y-38]],'#453025');
  // The right-hand blade shares the actual wrist point, not a detached position.
  poly([[x+7,y-12],[x+12,y-7],[x+13,y+2],[x+10,y+4],[x+6,y-5]],'#e5c7a0','#71533f',1);
- drawEquippedBlade(x+12,y+3,0.38,state.armory.soldiers[i]||'basic',i%2===0?'short':'long');
+ const kozWeapon=state.armory.soldiers[i]||'none';
+ if(kozWeapon!=='none'&&kozWeapon!=='basic'&&state.armory.owned.includes(kozWeapon))drawEquippedBlade(x+12,y+3,0.38,kozWeapon,i%2===0?'short':'long');
  drawEquippedShield(x-11,y-1,0.43,state.shields.soldiers[i]||'none');
  // Slow breathing and occasional smoking: cosmetic only, never changes coordinates.
  if(i%3===0){
