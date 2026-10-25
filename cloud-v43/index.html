@@ -485,6 +485,40 @@ function route(start,end){const a=nearestCell(start.x,start.y),b=nearestCell(end
  }return [];
 }
 let heroRoute=[];
+// v4.3.4: the hero needs collision-aware navigation too, not only the patrols.
+let heroGoal=null,heroRepathWait=0,heroBlockedFor=0;
+function heroDetour(start,destination,units){
+ const size=10,W=80,H=80;
+ const clamp=v=>Math.max(0,Math.min(W-1,Math.round(v/size)));
+ const key=(x,y)=>y*W+x;
+ const sx=clamp(start.x),sy=clamp(start.y),startKey=key(sx,sy);
+ const isFree=(x,y)=>navWalkable(x,y)&&units.every(q=>Math.hypot(x-q.x,y-q.y)>=32);
+ const todo=[startKey],seen=new Set([startKey]),parent=new Map();
+ let end=-1,best=-1,bestDist=Infinity;
+ for(let at=0;at<todo.length;at++){
+  const k=todo[at],cx=k%W,cy=Math.floor(k/W),x=cx*size,y=cy*size;
+  const d=Math.hypot(x-destination.x,y-destination.y);
+  if(d<bestDist&&isFree(x,y)){best=k;bestDist=d}
+  if(d<14&&isFree(x,y)){end=k;break}
+  for(const [dx,dy] of [[0,-1],[1,0],[0,1],[-1,0]]){
+   const nx=cx+dx,ny=cy+dy,nk=key(nx,ny);
+   if(nx<0||ny<0||nx>=W||ny>=H||seen.has(nk))continue;
+   if(!isFree(nx*size,ny*size))continue;
+   seen.add(nk);parent.set(nk,k);todo.push(nk);
+  }
+ }
+ if(end<0)end=best;
+ if(end<0||end===startKey)return [];
+ let path=[];
+ for(let k=end;k!==startKey;k=parent.get(k)){
+  if(k===undefined)return [];
+  path.push({x:k%W*size,y:Math.floor(k/W)*size});
+ }
+ path.reverse();
+ // Start at the hero's exact coordinates, rather than teleporting to a grid cell.
+ return path;
+}
+
 function walkPath(agent,dt,speed){if(!agent.route||!agent.route.length)return false;const target=agent.route[0],dx=target.x-agent.x,dy=target.y-agent.y,d=Math.hypot(dx,dy),step=speed*dt;if(d<=step+0.7){agent.x=target.x;agent.y=target.y;agent.route.shift()}else{agent.x+=dx/d*step;agent.y+=dy/d*step}return true}
 // v4.3.2 — deterministic patrol objectives and dynamic 10px-grid replanning.
 // Routes must never leave a warrior indefinitely stuck at the gate.
@@ -718,7 +752,34 @@ function selectedBuildingLight(){
  ctx.fillStyle='#ffe6b1';ctx.fillText(d.title,x,top);ctx.restore();
 }
 function draw(){ctx.clearRect(0,0,800,800);let grad=ctx.createLinearGradient(0,0,800,800);grad.addColorStop(0,'#8bad64');grad.addColorStop(1,'#537d59');ctx.fillStyle=grad;ctx.fillRect(0,0,800,800);for(let j=0;j<13;j++)for(let i=0;i<14;i++){let x=i*66+(j%2)*23,y=j*66;oval(x,y,24,10,(i+j)%3===0?'#8daf68':'#7da562')};poly([[0,610],[80,565],[80,645],[0,705]],'#d4ba7e','#c6a26e',2);poly([[50,216],[280,118],[496,90],[758,173],[737,604],[550,716],[218,704],[67,534]],'#86a85f','#b2a86c',5);v23Paths();v23Fence();for(let p of [[80,205],[147,157],[250,117],[710,165],[731,575],[650,645],[140,640],[65,490],[85,370]])tree(p[0],p[1],p[1]<200?.8:1.1);if(state.land>=1){for(let p of [[34,108],[90,80],[156,65],[230,54],[296,42]])tree(p[0],p[1],.85);label('🌲 ПІВНІЧНИЙ ГАЙ',170,40,15,'#fff0ba')}else{label('🔒 ГАЙ',134,70,22)}if(state.land>=3){label('🗺️ ЗЕМЛІ '+(state.land+1)+' РІВ.',430,42,15,'#ffe5a2')}if(state.land>=2){poly([[700,415],[800,381],[800,800],[641,800],[653,665]],'#5197bb','#2b698a',4);for(let i=0;i<5;i++)oval(740,480+i*62,45,6,'#9acdd3');label('⛵',727,589,46);label('ДНІПРО',727,620,18)}else{label('🔒 БЕРЕГ',694,777,18)}for(let p of [[108,292],[685,337],[125,576],[530,666]]){oval(p[0],p[1],24,12,'#b89c71');oval(p[0],p[1]-4,8,3,'#ddd0a2')};farm(155,390,state.buildings.farm);stableDrawing(215,235,state.buildings.stable);forge(590,425,state.buildings.forge);hut(398,312,state.buildings.hut,1);tower(632,211,state.buildings.tower);v23Details();selectedBuildingLight();drawVillagers();hero(state.hero.x,state.hero.y);$('troopBadge').textContent='🛡️ '+state.army.recruits+' '+(state.army.recruits===1?'козак':state.army.recruits<5?'козаки':'козаків');label('⚔️',715,689,37);label('БІЙ',715,724,17);}
-canvas.addEventListener('click',e=>{let r=canvas.getBoundingClientRect(),x=(e.clientX-r.left)*800/r.width,y=(e.clientY-r.top)*800/r.height;let d=defs.map(d=>({...d,dist:Math.hypot(x-d.x,y-d.y)})).sort((a,b)=>a.dist-b.dist)[0];if(x>660&&y>640){tab='battle';render();$('hint').textContent='⚔️ Похід готовий!';}else if(d.dist<116)choose(d.id);else{const destination={x:Math.max(80,Math.min(718,x)),y:Math.max(175,Math.min(678,y))};heroRoute=roadPath(state.hero,destination);heroTarget=heroRoute.length?heroRoute[heroRoute.length-1]:null;$('hint').textContent=heroRoute.length?'🏃 Отаман обходить будівлі дорогою':'⛔ Тут немає проходу';}});document.querySelectorAll('[data-tab]').forEach(b=>b.addEventListener('click',()=>{tab=b.dataset.tab;render()}));window.addEventListener('focus',()=>{passive();if(state.daily.date!==today()){state.daily={date:today(),upgrade:0,earn:0,explore:0,viewed:[],claimed:[]};update()}});setInterval(()=>{passive();if(tab==='battle')render();updateHeaderOnly()},30000);function updateHeaderOnly(){paintHealth();$('wood').textContent=state.wood;$('food').textContent=state.food}if(!navWalkable(state.hero.x,state.hero.y)){const entry=roadProjection(state.hero.x,state.hero.y);if(entry){state.hero.x=entry.x;state.hero.y=entry.y}}update();function animate(ts){let dt=Math.min((ts-lastFrame||16)/1000,.05);lastFrame=ts;if(heroRoute.length){const agent={x:state.hero.x,y:state.hero.y,route:heroRoute};walkPath(agent,dt,135);if(patrolmen.every(p=>Math.hypot(agent.x-p.x,agent.y-p.y)>=23)){state.hero.x=agent.x;state.hero.y=agent.y}else{heroRoute=roadPath(state.hero,heroRoute[heroRoute.length-1]||state.hero)}if(heroRoute.length)walkPhase+=dt*16;else{heroTarget=null;state.steps++;if(state.steps%3===0){state.xp+=5;show('🚶 Дослідження Січі: +5 досвіду');update()}else safe()}}else{heroTarget=null}updatePatrols(dt);draw();requestAnimationFrame(animate)}requestAnimationFrame(animate);})();
+canvas.addEventListener('click',e=>{let r=canvas.getBoundingClientRect(),x=(e.clientX-r.left)*800/r.width,y=(e.clientY-r.top)*800/r.height;let d=defs.map(d=>({...d,dist:Math.hypot(x-d.x,y-d.y)})).sort((a,b)=>a.dist-b.dist)[0];if(x>660&&y>640){tab='battle';render();$('hint').textContent='⚔️ Похід готовий!';}else if(d.dist<116)choose(d.id);else{const destination={x:Math.max(80,Math.min(718,x)),y:Math.max(175,Math.min(678,y))};heroRoute=roadPath(state.hero,destination);heroGoal=heroRoute.length?{...heroRoute[heroRoute.length-1]}:null;heroTarget=heroGoal;heroBlockedFor=0;heroRepathWait=0;$('hint').textContent=heroRoute.length?'🏃 Отаман обходить будівлі дорогою':'⛔ Тут немає проходу';}});document.querySelectorAll('[data-tab]').forEach(b=>b.addEventListener('click',()=>{tab=b.dataset.tab;render()}));window.addEventListener('focus',()=>{passive();if(state.daily.date!==today()){state.daily={date:today(),upgrade:0,earn:0,explore:0,viewed:[],claimed:[]};update()}});setInterval(()=>{passive();if(tab==='battle')render();updateHeaderOnly()},30000);function updateHeaderOnly(){paintHealth();$('wood').textContent=state.wood;$('food').textContent=state.food}if(!navWalkable(state.hero.x,state.hero.y)){const entry=roadProjection(state.hero.x,state.hero.y);if(entry){state.hero.x=entry.x;state.hero.y=entry.y}}update();function animate(ts){
+ let dt=Math.min((ts-lastFrame||16)/1000,.05);lastFrame=ts;
+ heroRepathWait=Math.max(0,heroRepathWait-dt);
+ if(heroRoute.length){
+   const agent={x:state.hero.x,y:state.hero.y,route:heroRoute};
+   walkPath(agent,dt,110);
+   const blocked=patrolmen.some(p=>Math.hypot(agent.x-p.x,agent.y-p.y)<30);
+   if(!blocked&&navWalkable(agent.x,agent.y)){
+     const moved=Math.hypot(agent.x-state.hero.x,agent.y-state.hero.y);
+     state.hero.x=agent.x;state.hero.y=agent.y;
+     heroBlockedFor=0;
+     if(moved>.03)walkPhase+=dt*16;
+   }else{
+     heroBlockedFor+=dt;
+     // Avoid oscillation: replace the blocked path with a real path around units.
+     if(heroBlockedFor>.18&&heroRepathWait<=0&&heroGoal){
+       const detour=heroDetour(state.hero,heroGoal,patrolmen);
+       if(detour.length){heroRoute=detour;heroBlockedFor=0;heroRepathWait=.8}
+       else heroRepathWait=.5;
+     }
+   }
+   if(!heroRoute.length){
+     heroTarget=null;heroGoal=null;state.steps++;
+     if(state.steps%3===0){state.xp+=5;show('🚶 Дослідження Січі: +5 досвіду');update()}else safe()
+   }
+ }else{heroTarget=null;heroGoal=null}
+ updatePatrols(dt);draw();requestAnimationFrame(animate)
+}requestAnimationFrame(animate);})();
 </script><script>
 (function(){
   const intro=document.getElementById('sichLaunch'), play=document.getElementById('sichPlay'), menu=document.getElementById('sichMenu');
