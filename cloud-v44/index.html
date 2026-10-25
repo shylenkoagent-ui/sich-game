@@ -471,7 +471,7 @@ const obstacles=[
  [78,190,263,366],   // stable
  [73,379,263,544],   // farm
  [571,85,698,299],   // tower
- [485,565,716,790],  // full sheltered yard + margin around roof
+ [157,568,351,716],  // relocated west courtyard; away from y=550 and x=400 roads
 ];
 // One-way round trip on the existing connected road network. Avoid routing
 // soldiers into each other's starting positions or through the gate structure.
@@ -584,8 +584,8 @@ function updatePatrols(dt){
  for(let i=0;i<count;i++){
    const row=Math.floor(i/cols),inRow=Math.min(cols,count-row*cols);
    const col=i%cols;
-   const x=510+.76*(555+(col-(inRow-1)/2)*spacing-450);
-   const y=577+.76*(659+row*48-540);
+   const x=182+.64*(555+(col-(inRow-1)/2)*spacing-450);
+   const y=580+.64*(659+row*48-540);
    const p=patrolmen[i]||(patrolmen[i]={});
    p.x=x;p.y=y;p.walking=false;p.phase=i*.85+performance.now()/2100;
  }
@@ -595,7 +595,7 @@ let selectedYard=false;
 function drawDruzhynaYard(){
  // Wooden sheltered parade ground; the soldiers are rendered in front of the rear rail.
  const t=performance.now()/850;
- ctx.save();ctx.translate(510,577);ctx.scale(.76,.76);ctx.translate(-450,-540);ctx.lineJoin='round';ctx.lineCap='round';
+ ctx.save();ctx.translate(182,580);ctx.scale(.64,.64);ctx.translate(-450,-540);ctx.lineJoin='round';ctx.lineCap='round';
  // Packed earth footprint, no selection ellipse.
  poly([[450,588],[665,588],[686,716],[432,716]],selectedYard?'#b4a479':'#9f9269',selectedYard?'#f8dc92':'#73593d',selectedYard?3:2);
  // Wooden deck strips
@@ -628,7 +628,7 @@ function drawDruzhynaYard(){
  ctx.restore();
 }
 function drawYardFront(){
- ctx.save();ctx.translate(510,577);ctx.scale(.76,.76);ctx.translate(-450,-540);ctx.lineCap='round';ctx.lineJoin='round';
+ ctx.save();ctx.translate(182,580);ctx.scale(.64,.64);ctx.translate(-450,-540);ctx.lineCap='round';ctx.lineJoin='round';
  // Short railing at the FRONT of the soldiers, leaving a clear center entrance.
  for(let [from,to] of [[442,506],[615,684]]){
   ctx.strokeStyle=selectedYard?'#f3d48b':'#6e4b30';
@@ -807,7 +807,7 @@ function selectedBuildingLight(){
  ctx.fillStyle='#ffe6b1';ctx.fillText(d.title,x,top);ctx.restore();
 }
 function draw(){ctx.clearRect(0,0,800,800);let grad=ctx.createLinearGradient(0,0,800,800);grad.addColorStop(0,'#8bad64');grad.addColorStop(1,'#537d59');ctx.fillStyle=grad;ctx.fillRect(0,0,800,800);for(let j=0;j<13;j++)for(let i=0;i<14;i++){let x=i*66+(j%2)*23,y=j*66;oval(x,y,24,10,(i+j)%3===0?'#8daf68':'#7da562')};poly([[0,610],[80,565],[80,645],[0,705]],'#d4ba7e','#c6a26e',2);poly([[50,216],[280,118],[496,90],[758,173],[737,604],[550,716],[218,704],[67,534]],'#86a85f','#b2a86c',5);v23Paths();v23Fence();for(let p of [[80,205],[147,157],[250,117],[710,165],[731,575],[650,645],[140,640],[65,490],[85,370]])tree(p[0],p[1],p[1]<200?.8:1.1);if(state.land>=1){for(let p of [[34,108],[90,80],[156,65],[230,54],[296,42]])tree(p[0],p[1],.85);label('🌲 ПІВНІЧНИЙ ГАЙ',170,40,15,'#fff0ba')}else{label('🔒 ГАЙ',134,70,22)}if(state.land>=3){label('🗺️ ЗЕМЛІ '+(state.land+1)+' РІВ.',430,42,15,'#ffe5a2')}if(state.land>=2){poly([[700,415],[800,381],[800,800],[641,800],[653,665]],'#5197bb','#2b698a',4);for(let i=0;i<5;i++)oval(740,480+i*62,45,6,'#9acdd3');label('⛵',727,589,46);label('ДНІПРО',727,620,18)}else{label('🔒 БЕРЕГ',694,777,18)}for(let p of [[108,292],[685,337],[125,576],[530,666]]){oval(p[0],p[1],24,12,'#b89c71');oval(p[0],p[1]-4,8,3,'#ddd0a2')};farm(155,390,state.buildings.farm);stableDrawing(215,235,state.buildings.stable);forge(590,425,state.buildings.forge);hut(398,312,state.buildings.hut,1);tower(632,211,state.buildings.tower);v23Details();selectedBuildingLight();drawDruzhynaYard();drawVillagers();drawYardFront();hero(state.hero.x,state.hero.y);$('troopBadge').textContent='🛡️ '+state.army.recruits+' '+(state.army.recruits===1?'козак':state.army.recruits<5?'козаки':'козаків');label('⚔️',715,689,37);label('БІЙ',715,724,17);}
-canvas.addEventListener('click',e=>{let r=canvas.getBoundingClientRect(),x=(e.clientX-r.left)*800/r.width,y=(e.clientY-r.top)*800/r.height;let d=defs.map(d=>({...d,dist:Math.hypot(x-d.x,y-d.y)})).sort((a,b)=>a.dist-b.dist)[0];if(x>=493&&x<=711&&y>=565&&y<=790){selectedYard=true;$('hint').textContent='🏕️ Майдан дружини · Воїнів: '+state.army.recruits+'/'+armyLimit();}else if(x>660&&y>640){selectedYard=false;tab='battle';render();$('hint').textContent='⚔️ Похід готовий!';}else if(d.dist<116)choose(d.id);else{const destination={x:Math.max(80,Math.min(718,x)),y:Math.max(175,Math.min(678,y))};heroRoute=route(state.hero,destination);heroGoal=heroRoute.length?{...heroRoute[heroRoute.length-1]}:null;heroTarget=heroGoal;heroBlockedFor=0;heroRepathWait=0;$('hint').textContent=heroRoute.length?'🏃 Отаман обходить будівлі дорогою':'⛔ Тут немає проходу';}});document.querySelectorAll('[data-tab]').forEach(b=>b.addEventListener('click',()=>{tab=b.dataset.tab;render()}));window.addEventListener('focus',()=>{passive();if(state.daily.date!==today()){state.daily={date:today(),upgrade:0,earn:0,explore:0,viewed:[],claimed:[]};update()}});setInterval(()=>{passive();if(tab==='battle')render();updateHeaderOnly()},30000);function updateHeaderOnly(){paintHealth();$('wood').textContent=state.wood;$('food').textContent=state.food}if(!navWalkable(state.hero.x,state.hero.y)){const cell=nearestCell(state.hero.x,state.hero.y);if(cell){state.hero.x=cell[0]*NAV_STEP;state.hero.y=cell[1]*NAV_STEP}}update();function animate(ts){
+canvas.addEventListener('click',e=>{let r=canvas.getBoundingClientRect(),x=(e.clientX-r.left)*800/r.width,y=(e.clientY-r.top)*800/r.height;let d=defs.map(d=>({...d,dist:Math.hypot(x-d.x,y-d.y)})).sort((a,b)=>a.dist-b.dist)[0];if(x>=158&&x<=345&&y>=574&&y<=713){selectedYard=true;$('hint').textContent='🏕️ Майдан дружини · Воїнів: '+state.army.recruits+'/'+armyLimit();}else if(x>660&&y>640){selectedYard=false;tab='battle';render();$('hint').textContent='⚔️ Похід готовий!';}else if(d.dist<116)choose(d.id);else{const destination={x:Math.max(80,Math.min(718,x)),y:Math.max(175,Math.min(678,y))};heroRoute=route(state.hero,destination);heroGoal=heroRoute.length?{...heroRoute[heroRoute.length-1]}:null;heroTarget=heroGoal;heroBlockedFor=0;heroRepathWait=0;$('hint').textContent=heroRoute.length?'🏃 Отаман обходить будівлі дорогою':'⛔ Тут немає проходу';}});document.querySelectorAll('[data-tab]').forEach(b=>b.addEventListener('click',()=>{tab=b.dataset.tab;render()}));window.addEventListener('focus',()=>{passive();if(state.daily.date!==today()){state.daily={date:today(),upgrade:0,earn:0,explore:0,viewed:[],claimed:[]};update()}});setInterval(()=>{passive();if(tab==='battle')render();updateHeaderOnly()},30000);function updateHeaderOnly(){paintHealth();$('wood').textContent=state.wood;$('food').textContent=state.food}if(!navWalkable(state.hero.x,state.hero.y)){const cell=nearestCell(state.hero.x,state.hero.y);if(cell){state.hero.x=cell[0]*NAV_STEP;state.hero.y=cell[1]*NAV_STEP}}update();function animate(ts){
  let dt=Math.min((ts-lastFrame||16)/1000,.05);lastFrame=ts;
  heroRepathWait=Math.max(0,heroRepathWait-dt);
  if(!navWalkable(state.hero.x,state.hero.y)){
