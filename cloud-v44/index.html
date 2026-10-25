@@ -652,20 +652,23 @@ function miniKozak(x,y,phase,walking,i){
  ctx.strokeStyle='#a43e38';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(x-2,y-13);ctx.lineTo(x-2,y-3);ctx.moveTo(x+2,y-13);ctx.lineTo(x+2,y-3);ctx.stroke();
  ctx.fillStyle='#a03d30';ctx.fillRect(x-10,y-1,20,4);oval(x,y-22,11,12,'#dca778');oval(x-4,y-23,1.3,1.3,'#282923');oval(x+4,y-23,1.3,1.3,'#282923');
  poly([[x-7,y-18],[x,y-20],[x+7,y-18],[x,y-14]],'#4b3126');poly([[x-7,y-33],[x+3,y-37],[x+10,y-30],[x-4,y-31]],'#453025');poly([[x-2,y-34],[x,y-45],[x+7,y-44],[x+5,y-38]],'#453025');
- // Both arms are always visible, including without purchased equipment.
- // Left: sleeve, forearm, and hand, drawn independently from the right arm.
- poly([[x-8,y-13],[x-15,y-10],[x-18,y-1],[x-14,y+4],[x-10,y-3],[x-7,y-7]],'#e5c7a0','#71533f',1);
- oval(x-15,y+3,3.2,3.8,'#dca778');
- // The right-hand blade shares the actual wrist point, not a detached position.
- poly([[x+7,y-12],[x+12,y-7],[x+13,y+2],[x+10,y+4],[x+6,y-5]],'#e5c7a0','#71533f',1);
+ // Symmetrical idle arms: same sleeve length, elbow bend and visible hands.
+ // Equipment is a separate visual layer and never changes the underlying anatomy.
+ for(const side of [-1,1]){
+   ctx.save();ctx.translate(x,y);ctx.scale(side,1);ctx.translate(-x,-y);
+   poly([[x+8,y-13],[x+14,y-10],[x+17,y-1],[x+15,y+4],
+         [x+11,y+4],[x+10,y-4],[x+7,y-8]],'#e5c7a0','#71533f',1);
+   oval(x+15,y+4,3.3,3.6,'#dca778');
+   ctx.restore();
+ }
  const kozWeapon=state.armory.soldiers[i]||'none';
- if(kozWeapon!=='none'&&kozWeapon!=='basic'&&state.armory.owned.includes(kozWeapon))drawEquippedBlade(x+12,y+3,0.38,kozWeapon,i%2===0?'short':'long');
- drawEquippedShield(x-11,y-1,0.43,state.shields.soldiers[i]||'none');
+ if(kozWeapon!=='none'&&kozWeapon!=='basic'&&state.armory.owned.includes(kozWeapon))drawEquippedBlade(x+15,y+4,0.38,kozWeapon,i%2===0?'short':'long');
+ drawEquippedShield(x-15,y+1,0.43,state.shields.soldiers[i]||'none');
  // Slow breathing and occasional smoking: cosmetic only, never changes coordinates.
  if(i%3===0){
    const t=performance.now()/1000+i*1.7;
    ctx.save();ctx.strokeStyle='#704525';ctx.lineWidth=2;
-   ctx.beginPath();ctx.moveTo(x+7,y-17);ctx.lineTo(x+14,y-18);ctx.stroke();
+   ctx.beginPath();ctx.moveTo(x+8,y-19);ctx.lineTo(x+14,y-18);ctx.stroke();
    for(let k=0;k<3;k++){
      const rise=(t*10+k*13)%40;
      ctx.globalAlpha=.30*(1-rise/45);
