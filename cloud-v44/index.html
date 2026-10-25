@@ -470,6 +470,7 @@ const obstacles=[
  [78,190,263,366],   // stable
  [73,379,263,544],   // farm
  [571,85,698,299],   // tower
+ [503,585,699,730],  // sheltered druzhyna yard (hero cannot walk onto its roof or floor)
 ];
 // One-way round trip on the existing connected road network. Avoid routing
 // soldiers into each other's starting positions or through the gate structure.
@@ -582,8 +583,8 @@ function updatePatrols(dt){
  for(let i=0;i<count;i++){
    const row=Math.floor(i/cols),inRow=Math.min(cols,count-row*cols);
    const col=i%cols;
-   const x=555+(col-(inRow-1)/2)*spacing;
-   const y=659+row*48;
+   const x=510+.76*(555+(col-(inRow-1)/2)*spacing-450);
+   const y=577+.76*(659+row*48-540);
    const p=patrolmen[i]||(patrolmen[i]={});
    p.x=x;p.y=y;p.walking=false;p.phase=i*.85+performance.now()/2100;
  }
@@ -593,19 +594,19 @@ let selectedYard=false;
 function drawDruzhynaYard(){
  // Wooden sheltered parade ground; the soldiers are rendered in front of the rear rail.
  const t=performance.now()/850;
- ctx.save();ctx.lineJoin='round';ctx.lineCap='round';
+ ctx.save();ctx.translate(510,577);ctx.scale(.76,.76);ctx.translate(-450,-540);ctx.lineJoin='round';ctx.lineCap='round';
  // Packed earth footprint, no selection ellipse.
- poly([[450,588],[665,588],[686,716],[432,716]],'#9f9269','#73593d',2);
+ poly([[450,588],[665,588],[686,716],[432,716]],selectedYard?'#b4a479':'#9f9269',selectedYard?'#f8dc92':'#73593d',selectedYard?3:2);
  // Wooden deck strips
  for(let j=0;j<5;j++){
-  ctx.strokeStyle='rgba(68,49,30,.22)';ctx.lineWidth=1.5;
+  ctx.strokeStyle=selectedYard?'rgba(255,229,146,.50)':'rgba(68,49,30,.22)';ctx.lineWidth=1.5;
   ctx.beginPath();ctx.moveTo(449-j*2,611+j*19);ctx.lineTo(669+j*2,611+j*19);ctx.stroke();
  }
  // Back rail / fence posts.
  for(let x=451;x<=670;x+=27){
-  poly([[x-4,612],[x-4,578],[x,571],[x+4,578],[x+4,612]],'#9b673f','#583e2b',1.3);
+  poly([[x-4,612],[x-4,578],[x,571],[x+4,578],[x+4,612]],selectedYard?'#b7834c':'#9b673f',selectedYard?'#ffe09c':'#583e2b',selectedYard?2.5:1.3);
  }
- poly([[445,582],[676,582],[676,592],[445,592]],'#bd9155','#61432c',1.5);
+ poly([[445,582],[676,582],[676,592],[445,592]],'#bd9155',selectedYard?'#ffe09c':'#61432c',selectedYard?2.5:1.5);
  // Roof canopy at the rear. Character heads remain visible below its front edge.
  ctx.shadowColor=selectedYard?'#ffdf83':'transparent';ctx.shadowBlur=selectedYard?17:0;
  poly([[449,584],[482,540],[645,540],[676,584],[667,596],[459,596]],selectedYard?'#ae7544':'#91613d',selectedYard?'#ffe4a3':'#533a2b',selectedYard?3:2);
@@ -616,7 +617,7 @@ function drawDruzhynaYard(){
  ctx.shadowBlur=0;
  // Vertical supports, placed behind soldiers.
  for(let x of [454,672]){
-  poly([[x-6,582],[x+5,582],[x+5,704],[x-6,704]],'#98673e','#4c392b',2);
+  poly([[x-6,582],[x+5,582],[x+5,704],[x-6,704]],'#98673e',selectedYard?'#ffe09c':'#4c392b',selectedYard?3:2);
  }
  // Above-head roof plaque, separate from the troops.
  ctx.fillStyle='#193e32';ctx.strokeStyle=selectedYard?'#ffdf91':'#bd9155';ctx.lineWidth=selectedYard?2.7:1.6;
@@ -626,7 +627,7 @@ function drawDruzhynaYard(){
  ctx.restore();
 }
 function drawYardFront(){
- ctx.save();ctx.lineCap='round';ctx.lineJoin='round';
+ ctx.save();ctx.translate(510,577);ctx.scale(.76,.76);ctx.translate(-450,-540);ctx.lineCap='round';ctx.lineJoin='round';
  // Short railing at the FRONT of the soldiers, leaving a clear center entrance.
  for(let [from,to] of [[442,506],[615,684]]){
   ctx.strokeStyle=selectedYard?'#f3d48b':'#6e4b30';
@@ -641,7 +642,7 @@ function drawYardFront(){
 function miniKozak(x,y,phase,walking,i){
  const stride=0;
  ctx.save();
- ctx.translate(x, y);ctx.rotate(Math.sin(performance.now()/1300+i)*.014);ctx.translate(-x,-y);
+ ctx.translate(x, y);ctx.rotate(Math.sin(performance.now()/1300+i)*.014);ctx.scale(.76,.76);ctx.translate(-x,-y);
  // Match the otaman's rendered height (~95px) without moving the patrol coordinate.
  ctx.translate(x,y+13);ctx.scale(1.48,1.48);ctx.translate(-x,-y-13);
  oval(x,y+13,14,5,'#3a6042');
@@ -651,6 +652,10 @@ function miniKozak(x,y,phase,walking,i){
  ctx.strokeStyle='#a43e38';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(x-2,y-13);ctx.lineTo(x-2,y-3);ctx.moveTo(x+2,y-13);ctx.lineTo(x+2,y-3);ctx.stroke();
  ctx.fillStyle='#a03d30';ctx.fillRect(x-10,y-1,20,4);oval(x,y-22,11,12,'#dca778');oval(x-4,y-23,1.3,1.3,'#282923');oval(x+4,y-23,1.3,1.3,'#282923');
  poly([[x-7,y-18],[x,y-20],[x+7,y-18],[x,y-14]],'#4b3126');poly([[x-7,y-33],[x+3,y-37],[x+10,y-30],[x-4,y-31]],'#453025');poly([[x-2,y-34],[x,y-45],[x+7,y-44],[x+5,y-38]],'#453025');
+ // Both arms are always visible, including without purchased equipment.
+ // Left: sleeve, forearm, and hand, drawn independently from the right arm.
+ poly([[x-8,y-13],[x-15,y-10],[x-18,y-1],[x-14,y+4],[x-10,y-3],[x-7,y-7]],'#e5c7a0','#71533f',1);
+ oval(x-15,y+3,3.2,3.8,'#dca778');
  // The right-hand blade shares the actual wrist point, not a detached position.
  poly([[x+7,y-12],[x+12,y-7],[x+13,y+2],[x+10,y+4],[x+6,y-5]],'#e5c7a0','#71533f',1);
  const kozWeapon=state.armory.soldiers[i]||'none';
@@ -798,7 +803,7 @@ function selectedBuildingLight(){
  ctx.fillStyle='#ffe6b1';ctx.fillText(d.title,x,top);ctx.restore();
 }
 function draw(){ctx.clearRect(0,0,800,800);let grad=ctx.createLinearGradient(0,0,800,800);grad.addColorStop(0,'#8bad64');grad.addColorStop(1,'#537d59');ctx.fillStyle=grad;ctx.fillRect(0,0,800,800);for(let j=0;j<13;j++)for(let i=0;i<14;i++){let x=i*66+(j%2)*23,y=j*66;oval(x,y,24,10,(i+j)%3===0?'#8daf68':'#7da562')};poly([[0,610],[80,565],[80,645],[0,705]],'#d4ba7e','#c6a26e',2);poly([[50,216],[280,118],[496,90],[758,173],[737,604],[550,716],[218,704],[67,534]],'#86a85f','#b2a86c',5);v23Paths();v23Fence();for(let p of [[80,205],[147,157],[250,117],[710,165],[731,575],[650,645],[140,640],[65,490],[85,370]])tree(p[0],p[1],p[1]<200?.8:1.1);if(state.land>=1){for(let p of [[34,108],[90,80],[156,65],[230,54],[296,42]])tree(p[0],p[1],.85);label('🌲 ПІВНІЧНИЙ ГАЙ',170,40,15,'#fff0ba')}else{label('🔒 ГАЙ',134,70,22)}if(state.land>=3){label('🗺️ ЗЕМЛІ '+(state.land+1)+' РІВ.',430,42,15,'#ffe5a2')}if(state.land>=2){poly([[700,415],[800,381],[800,800],[641,800],[653,665]],'#5197bb','#2b698a',4);for(let i=0;i<5;i++)oval(740,480+i*62,45,6,'#9acdd3');label('⛵',727,589,46);label('ДНІПРО',727,620,18)}else{label('🔒 БЕРЕГ',694,777,18)}for(let p of [[108,292],[685,337],[125,576],[530,666]]){oval(p[0],p[1],24,12,'#b89c71');oval(p[0],p[1]-4,8,3,'#ddd0a2')};farm(155,390,state.buildings.farm);stableDrawing(215,235,state.buildings.stable);forge(590,425,state.buildings.forge);hut(398,312,state.buildings.hut,1);tower(632,211,state.buildings.tower);v23Details();selectedBuildingLight();drawDruzhynaYard();drawVillagers();drawYardFront();hero(state.hero.x,state.hero.y);$('troopBadge').textContent='🛡️ '+state.army.recruits+' '+(state.army.recruits===1?'козак':state.army.recruits<5?'козаки':'козаків');label('⚔️',715,689,37);label('БІЙ',715,724,17);}
-canvas.addEventListener('click',e=>{let r=canvas.getBoundingClientRect(),x=(e.clientX-r.left)*800/r.width,y=(e.clientY-r.top)*800/r.height;let d=defs.map(d=>({...d,dist:Math.hypot(x-d.x,y-d.y)})).sort((a,b)=>a.dist-b.dist)[0];if(x>=440&&x<=688&&y>=539&&y<=736){selectedYard=true;$('hint').textContent='🏕️ Майдан дружини · Воїнів: '+state.army.recruits+'/'+troopCapacity();}else if(x>660&&y>640){selectedYard=false;tab='battle';render();$('hint').textContent='⚔️ Похід готовий!';}else if(d.dist<116)choose(d.id);else{const destination={x:Math.max(80,Math.min(718,x)),y:Math.max(175,Math.min(678,y))};heroRoute=roadPath(state.hero,destination);heroGoal=heroRoute.length?{...heroRoute[heroRoute.length-1]}:null;heroTarget=heroGoal;heroBlockedFor=0;heroRepathWait=0;$('hint').textContent=heroRoute.length?'🏃 Отаман обходить будівлі дорогою':'⛔ Тут немає проходу';}});document.querySelectorAll('[data-tab]').forEach(b=>b.addEventListener('click',()=>{tab=b.dataset.tab;render()}));window.addEventListener('focus',()=>{passive();if(state.daily.date!==today()){state.daily={date:today(),upgrade:0,earn:0,explore:0,viewed:[],claimed:[]};update()}});setInterval(()=>{passive();if(tab==='battle')render();updateHeaderOnly()},30000);function updateHeaderOnly(){paintHealth();$('wood').textContent=state.wood;$('food').textContent=state.food}if(!navWalkable(state.hero.x,state.hero.y)){const entry=roadProjection(state.hero.x,state.hero.y);if(entry){state.hero.x=entry.x;state.hero.y=entry.y}}update();function animate(ts){
+canvas.addEventListener('click',e=>{let r=canvas.getBoundingClientRect(),x=(e.clientX-r.left)*800/r.width,y=(e.clientY-r.top)*800/r.height;let d=defs.map(d=>({...d,dist:Math.hypot(x-d.x,y-d.y)})).sort((a,b)=>a.dist-b.dist)[0];if(x>=493&&x<=695&&y>=575&&y<=724){selectedYard=true;$('hint').textContent='🏕️ Майдан дружини · Воїнів: '+state.army.recruits+'/'+armyLimit();}else if(x>660&&y>640){selectedYard=false;tab='battle';render();$('hint').textContent='⚔️ Похід готовий!';}else if(d.dist<116)choose(d.id);else{const destination={x:Math.max(80,Math.min(718,x)),y:Math.max(175,Math.min(678,y))};heroRoute=roadPath(state.hero,destination);heroGoal=heroRoute.length?{...heroRoute[heroRoute.length-1]}:null;heroTarget=heroGoal;heroBlockedFor=0;heroRepathWait=0;$('hint').textContent=heroRoute.length?'🏃 Отаман обходить будівлі дорогою':'⛔ Тут немає проходу';}});document.querySelectorAll('[data-tab]').forEach(b=>b.addEventListener('click',()=>{tab=b.dataset.tab;render()}));window.addEventListener('focus',()=>{passive();if(state.daily.date!==today()){state.daily={date:today(),upgrade:0,earn:0,explore:0,viewed:[],claimed:[]};update()}});setInterval(()=>{passive();if(tab==='battle')render();updateHeaderOnly()},30000);function updateHeaderOnly(){paintHealth();$('wood').textContent=state.wood;$('food').textContent=state.food}if(!navWalkable(state.hero.x,state.hero.y)){const entry=roadProjection(state.hero.x,state.hero.y);if(entry){state.hero.x=entry.x;state.hero.y=entry.y}}update();function animate(ts){
  let dt=Math.min((ts-lastFrame||16)/1000,.05);lastFrame=ts;
  heroRepathWait=Math.max(0,heroRepathWait-dt);
  if(heroRoute.length){
