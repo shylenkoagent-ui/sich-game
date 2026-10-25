@@ -484,6 +484,39 @@ function route(start,end){const a=nearestCell(start.x,start.y),b=nearestCell(end
 let heroRoute=[];
 function walkPath(agent,dt,speed){if(!agent.route||!agent.route.length)return false;const target=agent.route[0],dx=target.x-agent.x,dy=target.y-agent.y,d=Math.hypot(dx,dy),step=speed*dt;if(d<=step+0.7){agent.x=target.x;agent.y=target.y;agent.route.shift()}else{agent.x+=dx/d*step;agent.y+=dy/d*step}return true}
 function assignPatrol(person,i){for(let attempt=0;attempt<patrolStops.length;attempt++){const idx=(person.nextStop+i*3+attempt)%patrolStops.length,pt=patrolStops[idx],r=roadPath(person, {x:pt[0],y:pt[1]});if(r.length){person.route=r;person.nextStop=idx+1;return}}person.pause=1.2}
+// v4.3.1: plan a real temporary detour on the walkable grid, avoiding occupied cells.
+// The original patrol destination stays intact; after the detour the patrol resumes.
+function patrolDetour(p,blockers){
+ const radius=31,unitClear=(x,y)=>navWalkable(x,y)&&blockers.every(q=>Math.hypot(x-q.x,y-q.y)>radius);
+ const cell=(x,y)=>[Math.max(0,Math.min(79,Math.round(x/10))),Math.max(0,Math.min(79,Math.round(y/10)))];
+ const toKey=(x,y)=>y*80+x;
+ // Skip waypoints occupied by a standing unit. They remain in the original route, but
+ // a temporary bypass will reconnect beyond them instead of heading back into them.
+ let goalIndex=p.route.findIndex((pt,i)=>i>0&&unitClear(pt.x,pt.y)&&Math.hypot(pt.x-p.x,pt.y-p.y)>35);
+ if(goalIndex<0){goalIndex=p.route.length-1;if(!unitClear(p.route[goalIndex].x,p.route[goalIndex].y))return false}
+ const goal=p.route[goalIndex],start=cell(p.x,p.y),end=cell(goal.x,goal.y);
+ const startKey=toKey(...start),endKey=toKey(...end),queue=[startKey],visited=new Set([startKey]),prev=new Map();
+ let found=null;
+ for(let head=0;head<queue.length;head++){
+   const k=queue[head],cx=k%80,cy=Math.floor(k/80);
+   if(Math.hypot(cx*10-goal.x,cy*10-goal.y)<13&&unitClear(cx*10,cy*10)){found=k;break}
+   for(const [dx,dy] of [[1,0],[0,1],[-1,0],[0,-1]]){
+     const nx=cx+dx,ny=cy+dy,nk=toKey(nx,ny);
+     if(nx<0||nx>=80||ny<0||ny>=80||visited.has(nk)||!unitClear(nx*10,ny*10))continue;
+     visited.add(nk);prev.set(nk,k);queue.push(nk);
+   }
+ }
+ if(found===null)return false;
+ const points=[];
+ for(let k=found;k!==startKey;k=prev.get(k)){
+   if(k===undefined)return false;
+   points.push({x:k%80*10,y:Math.floor(k/80)*10});
+ }
+ points.reverse();
+ // Snap to next reachable grid cell, then reconnect to the original route.
+ p.route=[...points,goal,...p.route.slice(goalIndex+1)];
+ p.avoidDelay=0;p.lastTurn=0;return true;
+}
 // v4.3: steer around other units using small, collision-checked steps.
 function stepAroundUnit(p, blockers, dt, speed){
  const target=p.route[0];if(!target)return false;
@@ -518,11 +551,17 @@ function updatePatrols(dt){const count=Math.min(30,state.army.recruits);
   if(p.pause>0){p.pause-=dt;p.walking=false;continue}
   if(!p.route.length){p.pause=.4+(i%3)*.25;assignPatrol(p,i);continue}
   const blockers=[state.hero,...patrolmen.filter((other,j)=>j!==i)];
+  if(p.route.length && blockers.some(q=>Math.hypot(p.route[0].x-q.x,p.route[0].y-q.y)<28) && Math.hypot(p.x-p.route[0].x,p.y-p.route[0].y)<46){patrolDetour(p,blockers)}
   p.walking=stepAroundUnit(p,blockers,dt,42+i%3*5);
-  if(!p.walking){p.avoidDelay=(p.avoidDelay||0)+dt;
-    // When no local step is available, recalculate from current position after a short pause.
-    if(p.avoidDelay>1.1){const dest=p.route[p.route.length-1];const alternative=dest?roadPath(p,dest):[];if(alternative.length)p.route=alternative;p.avoidDelay=0}
-  }else p.avoidDelay=0;
+  // Track actual progress rather than animation frames: sidestepping without progress
+  // counts as stuck and triggers a path around the occupied road segment.
+  const progressed=Math.hypot(p.x-(p.previousX??p.x),p.y-(p.previousY??p.y));
+  const previousDistance=p.previousGoalDistance??Infinity;
+  const remaining=p.route.length?Math.hypot(p.route[0].x-p.x,p.route[0].y-p.y):0;
+  if(!p.walking||progressed<.08||remaining>previousDistance+.06){p.avoidDelay=(p.avoidDelay||0)+dt}
+  else p.avoidDelay=Math.max(0,(p.avoidDelay||0)-dt*.25);
+  if(p.avoidDelay>.55){patrolDetour(p,blockers);p.avoidDelay=0}
+  p.previousX=p.x;p.previousY=p.y;p.previousGoalDistance=remaining;
   p.phase+=dt*11;if(!p.route.length)p.pause=.7+i%3*.25;
  }
 }
