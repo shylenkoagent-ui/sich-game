@@ -465,7 +465,10 @@ const obstacles=[
  [73,379,263,544],   // farm
  [571,85,698,299],   // tower
 ];
-const patrolStops=[[400,650],[400,550],[400,418],[284,550],[284,344],[216,344],[195,500],[690,550],[690,475],[622,475],[690,280],[637,280]];
+// One-way round trip on the existing connected road network. Avoid routing
+// soldiers into each other's starting positions or through the gate structure.
+const patrolStops=[[400,650],[400,550],[284,550],[284,344],[216,344],[284,344],[284,550],[400,550],[690,550],[690,475],[690,280],[690,475],[690,550],[400,550]];
+const patrolSpawn=[0,8,3,10,6,12,2,9,4,11,1,7,5,13];
 const patrolmen=[];
 function navWalkable(x,y){
  if(x<78||x>718||y<175||y>678)return false;
@@ -489,7 +492,7 @@ function assignPatrol(p,i){
   for(let trial=0;trial<patrolStops.length;trial++){
     const idx=(p.nextStop+trial)%patrolStops.length;
     const dest={x:patrolStops[idx][0],y:patrolStops[idx][1]};
-    if(Math.hypot(dest.x-p.x,dest.y-p.y)<10)continue;
+    if(Math.hypot(dest.x-p.x,dest.y-p.y)<14)continue;
     const path=roadPath(p,dest).filter(pt=>navWalkable(pt.x,pt.y));
     if(path.length){p.route=path;p.goal=dest;p.nextStop=(idx+1)%patrolStops.length;p.stuck=0;return true}
   }
@@ -533,8 +536,8 @@ function patrolBypass(p, blockers){
 function updatePatrols(dt){
  const count=Math.min(30,state.army.recruits);
  while(patrolmen.length<count){
-   const i=patrolmen.length,pt=patrolStops[i%patrolStops.length];
-   patrolmen.push({x:pt[0],y:pt[1],route:[],pause:.25+i*.21,nextStop:(i+1)%patrolStops.length,phase:i,walking:false,stuck:0,replanned:false});
+   const i=patrolmen.length,idx=patrolSpawn[i%patrolSpawn.length],pt=patrolStops[idx];
+   patrolmen.push({x:pt[0],y:pt[1],route:[],pause:.25+i*.21,nextStop:(idx+1)%patrolStops.length,phase:i,walking:false,stuck:0,replanned:false});
  }
  patrolmen.length=count;
  for(let i=0;i<count;i++){
@@ -557,7 +560,7 @@ function updatePatrols(dt){
      }else p.stuck+=dt;
    }
    p.walking=Math.hypot(p.x-oldX,p.y-oldY)>0.02;
-   if(p.stuck>.4){
+   if(p.stuck>1.25){
      if(!patrolBypass(p,blockers)){
        // No free corridor: try the next patrol destination rather than looping
        // forever at a blocked waypoint.
