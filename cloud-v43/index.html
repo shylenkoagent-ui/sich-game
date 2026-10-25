@@ -483,86 +483,91 @@ function route(start,end){const a=nearestCell(start.x,start.y),b=nearestCell(end
 }
 let heroRoute=[];
 function walkPath(agent,dt,speed){if(!agent.route||!agent.route.length)return false;const target=agent.route[0],dx=target.x-agent.x,dy=target.y-agent.y,d=Math.hypot(dx,dy),step=speed*dt;if(d<=step+0.7){agent.x=target.x;agent.y=target.y;agent.route.shift()}else{agent.x+=dx/d*step;agent.y+=dy/d*step}return true}
-function assignPatrol(person,i){for(let attempt=0;attempt<patrolStops.length;attempt++){const idx=(person.nextStop+i*3+attempt)%patrolStops.length,pt=patrolStops[idx],r=roadPath(person, {x:pt[0],y:pt[1]});if(r.length){person.route=r;person.nextStop=idx+1;return}}person.pause=1.2}
-// v4.3.1: plan a real temporary detour on the walkable grid, avoiding occupied cells.
-// The original patrol destination stays intact; after the detour the patrol resumes.
-function patrolDetour(p,blockers){
- const radius=31,unitClear=(x,y)=>navWalkable(x,y)&&blockers.every(q=>Math.hypot(x-q.x,y-q.y)>radius);
- const cell=(x,y)=>[Math.max(0,Math.min(79,Math.round(x/10))),Math.max(0,Math.min(79,Math.round(y/10)))];
- const toKey=(x,y)=>y*80+x;
- // Skip waypoints occupied by a standing unit. They remain in the original route, but
- // a temporary bypass will reconnect beyond them instead of heading back into them.
- let goalIndex=p.route.findIndex((pt,i)=>i>0&&unitClear(pt.x,pt.y)&&Math.hypot(pt.x-p.x,pt.y-p.y)>35);
- if(goalIndex<0){goalIndex=p.route.length-1;if(!unitClear(p.route[goalIndex].x,p.route[goalIndex].y))return false}
- const goal=p.route[goalIndex],start=cell(p.x,p.y),end=cell(goal.x,goal.y);
- const startKey=toKey(...start),endKey=toKey(...end),queue=[startKey],visited=new Set([startKey]),prev=new Map();
- let found=null;
- for(let head=0;head<queue.length;head++){
-   const k=queue[head],cx=k%80,cy=Math.floor(k/80);
-   if(Math.hypot(cx*10-goal.x,cy*10-goal.y)<13&&unitClear(cx*10,cy*10)){found=k;break}
-   for(const [dx,dy] of [[1,0],[0,1],[-1,0],[0,-1]]){
-     const nx=cx+dx,ny=cy+dy,nk=toKey(nx,ny);
-     if(nx<0||nx>=80||ny<0||ny>=80||visited.has(nk)||!unitClear(nx*10,ny*10))continue;
-     visited.add(nk);prev.set(nk,k);queue.push(nk);
-   }
- }
- if(found===null)return false;
- const points=[];
- for(let k=found;k!==startKey;k=prev.get(k)){
-   if(k===undefined)return false;
-   points.push({x:k%80*10,y:Math.floor(k/80)*10});
- }
- points.reverse();
- // Snap to next reachable grid cell, then reconnect to the original route.
- p.route=[...points,goal,...p.route.slice(goalIndex+1)];
- p.avoidDelay=0;p.lastTurn=0;return true;
+// v4.3.2 — deterministic patrol objectives and dynamic 10px-grid replanning.
+// Routes must never leave a warrior indefinitely stuck at the gate.
+function assignPatrol(p,i){
+  for(let trial=0;trial<patrolStops.length;trial++){
+    const idx=(p.nextStop+trial)%patrolStops.length;
+    const dest={x:patrolStops[idx][0],y:patrolStops[idx][1]};
+    if(Math.hypot(dest.x-p.x,dest.y-p.y)<10)continue;
+    const path=roadPath(p,dest).filter(pt=>navWalkable(pt.x,pt.y));
+    if(path.length){p.route=path;p.goal=dest;p.nextStop=(idx+1)%patrolStops.length;p.stuck=0;return true}
+  }
+  p.pause=.35;return false;
 }
-// v4.3: steer around other units using small, collision-checked steps.
-function stepAroundUnit(p, blockers, dt, speed){
- const target=p.route[0];if(!target)return false;
- const desired=Math.atan2(target.y-p.y,target.x-p.x);
- const radius=27, step=Math.min(speed*dt,Math.hypot(target.x-p.x));
- const clear=(x,y)=>navWalkable(x,y)&&blockers.every(q=>Math.hypot(x-q.x,y-q.y)>=radius);
- // First try following the intended path; then prefer tangential moves on either side.
- const angles=[0,.35,-.35,.7,-.7,1.05,-1.05,1.4,-1.4,1.8,-1.8,2.3,-2.3,Math.PI];
- let best=null,bestScore=Infinity;
- for(const delta of angles){
-   const a=desired+delta,nx=p.x+Math.cos(a)*step,ny=p.y+Math.sin(a)*step;
-   if(!clear(nx,ny))continue;
-   // Prefer forward progress, but move laterally when the direct way is blocked.
-   const advance=Math.hypot(target.x-nx,target.y-ny);
-   const score=advance+Math.abs(delta)*.26+(p.lastTurn&&Math.sign(delta)!==p.lastTurn?1.2:0);
-   if(score<bestScore){best={x:nx,y:ny,delta};bestScore=score}
- }
- if(!best)return false;
- p.x=best.x;p.y=best.y;
- if(best.delta!==0)p.lastTurn=Math.sign(best.delta);
- if(Math.hypot(p.x-target.x,p.y-target.y)<Math.max(2.2,step+1.2)){
-   // Do not jump onto a waypoint occupied by another unit.
-   if(clear(target.x,target.y)){p.x=target.x;p.y=target.y;p.route.shift();p.lastTurn=0}
- }
- return true;
+// Breadth-first search to an existing patrol waypoint. Dynamic units are hard
+// obstacles, except the starting grid cell so an overlapping spawn can escape.
+function patrolBypass(p, blockers){
+  if(!p.goal)return false;
+  const W=80,step=10;
+  const c=(v)=>Math.max(0,Math.min(W-1,Math.round(v/step)));
+  const key=(x,y)=>y*W+x;
+  const sx=c(p.x),sy=c(p.y),start=key(sx,sy);
+  const dest=p.goal;
+  const isFree=(x,y)=>navWalkable(x,y)&&blockers.every(q=>Math.hypot(x-q.x,y-q.y)>29);
+  const open=[start],prev=new Map([[start,-1]]);
+  let goalKey=-1;
+  for(let head=0;head<open.length;head++){
+    const v=open[head],x=v%W,y=Math.floor(v/W);
+    const wx=x*step,wy=y*step;
+    if(Math.hypot(wx-dest.x,wy-dest.y)<11&&isFree(wx,wy)){goalKey=v;break}
+    for(const [dx,dy] of [[0,-1],[1,0],[0,1],[-1,0]]){
+      const nx=x+dx,ny=y+dy,k=key(nx,ny);
+      if(nx<0||ny<0||nx>=W||ny>=W||prev.has(k))continue;
+      if(!isFree(nx*step,ny*step))continue;
+      prev.set(k,v);open.push(k);
+    }
+  }
+  if(goalKey<0)return false;
+  const path=[];
+  for(let v=goalKey;v!==start;v=prev.get(v)){
+    if(v===undefined)return false;
+    path.push({x:v%W*step,y:Math.floor(v/W)*step});
+  }
+  path.reverse();
+  p.route=path;
+  p.stuck=0;
+  p.replanned=true;
+  return true;
 }
-function updatePatrols(dt){const count=Math.min(30,state.army.recruits);
- while(patrolmen.length<count){const i=patrolmen.length;const pt=patrolStops[(i*3)%patrolStops.length];patrolmen.push({x:pt[0],y:pt[1],route:[],pause:.4+i*.32,nextStop:i,phase:i,walking:false})}
+function updatePatrols(dt){
+ const count=Math.min(30,state.army.recruits);
+ while(patrolmen.length<count){
+   const i=patrolmen.length,pt=patrolStops[i%patrolStops.length];
+   patrolmen.push({x:pt[0],y:pt[1],route:[],pause:.25+i*.21,nextStop:(i+1)%patrolStops.length,phase:i,walking:false,stuck:0,replanned:false});
+ }
  patrolmen.length=count;
  for(let i=0;i<count;i++){
-  const p=patrolmen[i];
-  if(p.pause>0){p.pause-=dt;p.walking=false;continue}
-  if(!p.route.length){p.pause=.4+(i%3)*.25;assignPatrol(p,i);continue}
-  const blockers=[state.hero,...patrolmen.filter((other,j)=>j!==i)];
-  if(p.route.length && blockers.some(q=>Math.hypot(p.route[0].x-q.x,p.route[0].y-q.y)<28) && Math.hypot(p.x-p.route[0].x,p.y-p.route[0].y)<46){patrolDetour(p,blockers)}
-  p.walking=stepAroundUnit(p,blockers,dt,42+i%3*5);
-  // Track actual progress rather than animation frames: sidestepping without progress
-  // counts as stuck and triggers a path around the occupied road segment.
-  const progressed=Math.hypot(p.x-(p.previousX??p.x),p.y-(p.previousY??p.y));
-  const previousDistance=p.previousGoalDistance??Infinity;
-  const remaining=p.route.length?Math.hypot(p.route[0].x-p.x,p.route[0].y-p.y):0;
-  if(!p.walking||progressed<.08||remaining>previousDistance+.06){p.avoidDelay=(p.avoidDelay||0)+dt}
-  else p.avoidDelay=Math.max(0,(p.avoidDelay||0)-dt*.25);
-  if(p.avoidDelay>.55){patrolDetour(p,blockers);p.avoidDelay=0}
-  p.previousX=p.x;p.previousY=p.y;p.previousGoalDistance=remaining;
-  p.phase+=dt*11;if(!p.route.length)p.pause=.7+i%3*.25;
+   const p=patrolmen[i];
+   if(p.pause>0){p.pause-=dt;p.walking=false;continue}
+   if(!p.route.length){p.walking=false;assignPatrol(p,i);continue}
+   const blockers=[state.hero,...patrolmen.filter((other,j)=>j!==i)];
+   const oldX=p.x,oldY=p.y,goal=p.route[0];
+   const advance=(42+i%3*5)*dt;
+   const distance=Math.hypot(goal.x-p.x,goal.y-p.y);
+   if(distance<Math.max(advance,1.2)){
+     if(blockers.every(q=>Math.hypot(goal.x-q.x,goal.y-q.y)>=27)&&navWalkable(goal.x,goal.y)){
+       p.x=goal.x;p.y=goal.y;p.route.shift();p.stuck=0;
+     }else p.stuck+=dt;
+   }else{
+     const nx=p.x+(goal.x-p.x)/distance*advance;
+     const ny=p.y+(goal.y-p.y)/distance*advance;
+     if(navWalkable(nx,ny)&&blockers.every(q=>Math.hypot(nx-q.x,ny-q.y)>=27)){
+       p.x=nx;p.y=ny;p.stuck=0;
+     }else p.stuck+=dt;
+   }
+   p.walking=Math.hypot(p.x-oldX,p.y-oldY)>0.02;
+   if(p.stuck>.4){
+     if(!patrolBypass(p,blockers)){
+       // No free corridor: try the next patrol destination rather than looping
+       // forever at a blocked waypoint.
+       p.route=[];p.nextStop=(p.nextStop+1)%patrolStops.length;
+       p.pause=.2;
+     }
+     p.stuck=0;
+   }
+   if(!p.route.length){p.goal=null;p.pause=.35}
+   p.phase+=dt*11;
  }
 }
 function miniKozak(x,y,phase,walking,i){
